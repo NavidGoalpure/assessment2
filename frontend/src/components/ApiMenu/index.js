@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import ApiNavigationTabs from './ApiNavigationTabs';
-import ApiRouteCard from './ApiRouteCard';
+import ApiNavigationTabs from '../ApiNavigationTabs';
+import ApiRouteCard from '../ApiRouteCard';
 
 const ApiMenuPage = () => {
   const [activeSection, setActiveSection] = useState('items');
@@ -21,10 +21,10 @@ const ApiMenuPage = () => {
           method: 'GET',
           endpoint: '/api/items',
           description: 'Get all items with pagination and search',
-          params: [
-            { name: 'searchQuery', type: 'string', description: 'Search by name or category' },
-            { name: 'pageNumber', type: 'number', description: 'Page number (default: 1)' },
-            { name: 'itemsPerPage', type: 'number', description: 'Items per page (default: 10)' }
+          parameters: [
+            { name: 'searchQuery', required: false, description: 'Search by name or category' },
+            { name: 'pageNumber', required: false, description: 'Page number (default: 1)' },
+            { name: 'itemsPerPage', required: false, description: 'Items per page (default: 10)' }
           ],
           example: '/api/items?searchQuery=electronics&pageNumber=1&itemsPerPage=5',
           testUrl: `${API_BASE_URL}/api/items?searchQuery=electronics&pageNumber=1&itemsPerPage=5`
@@ -33,37 +33,11 @@ const ApiMenuPage = () => {
           method: 'GET',
           endpoint: '/api/items/:id',
           description: 'Get a specific item by ID',
-          params: [
-            { name: 'id', type: 'number', description: 'Item ID' }
+          parameters: [
+            { name: 'id', required: true, description: 'Item ID' }
           ],
           example: '/api/items/1',
           testUrl: `${API_BASE_URL}/api/items/1`
-        },
-        {
-          method: 'POST',
-          endpoint: '/api/items',
-          description: 'Create a new item',
-          body: {
-            name: 'Test Item',
-            category: 'Electronics',
-            price: 99.99,
-            description: 'A test item created via API'
-          },
-          example: 'POST /api/items\n{"name": "New Item", "category": "Electronics", "price": 99.99}',
-          testUrl: `${API_BASE_URL}/api/items`,
-          testBody: {
-            name: 'Test Item',
-            category: 'Electronics',
-            price: 99.99,
-            description: 'A test item created via API'
-          }
-        },
-        {
-          method: 'GET',
-          endpoint: '/api/items/stats/strategy',
-          description: 'Get data manager strategy information',
-          example: '/api/items/stats/strategy',
-          testUrl: `${API_BASE_URL}/api/items/stats/strategy`
         }
       ]
     },
@@ -78,20 +52,6 @@ const ApiMenuPage = () => {
           description: 'Get comprehensive statistics (cached for 5 minutes)',
           example: '/api/stats',
           testUrl: `${API_BASE_URL}/api/stats`
-        },
-        {
-          method: 'POST',
-          endpoint: '/api/stats/refresh',
-          description: 'Force refresh statistics cache',
-          example: 'POST /api/stats/refresh',
-          testUrl: `${API_BASE_URL}/api/stats/refresh`
-        },
-        {
-          method: 'GET',
-          endpoint: '/api/stats/cache-info',
-          description: 'Get cache information and status',
-          example: '/api/stats/cache-info',
-          testUrl: `${API_BASE_URL}/api/stats/cache-info`
         }
       ]
     }
@@ -103,8 +63,7 @@ const ApiMenuPage = () => {
     setTimeout(() => setCopiedEndpoint(null), 2000);
   };
 
-  const testApiEndpoint = async (route, index) => {
-    const routeKey = `${activeSection}-${index}`;
+  const testApiEndpoint = async (routeKey, route) => {
     setIsLoading(prev => ({ ...prev, [routeKey]: true }));
     setTestResults(prev => ({ ...prev, [routeKey]: null }));
     setShowResults(prev => ({ ...prev, [routeKey]: true }));
