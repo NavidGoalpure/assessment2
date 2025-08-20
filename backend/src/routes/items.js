@@ -1,6 +1,8 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
+const { paginateResults } = require('../utils/pagination');
+const { searchItems } = require('../utils/search');
 const router = express.Router();
 const DATA_PATH = path.join(__dirname, '../../../data/items.json');
 
@@ -14,19 +16,14 @@ function readData() {
 router.get('/', (req, res, next) => {
   try {
     const data = readData();
-    const { limit, q } = req.query;
-    let results = data;
+    const { q, page = 1, limit = 10 } = req.query;
+    
+    // Apply search filter
+    let results = searchItems(data, q);
 
-    if (q) {
-      // Simple substring search (sub‑optimal)
-      results = results.filter(item => item.name.toLowerCase().includes(q.toLowerCase()));
-    }
-
-    if (limit) {
-      results = results.slice(0, parseInt(limit));
-    }
-
-    res.json(results);
+    // Apply pagination
+    const response = paginateResults(results, page, limit);
+    res.json(response);
   } catch (err) {
     next(err);
   }
