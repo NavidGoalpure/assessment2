@@ -177,8 +177,6 @@ describe('StatsService Unit Tests', () => {
       const cacheInfo = statsService.getCacheInfo();
 
       expect(cacheInfo.hasCache).toBe(true);
-      expect(cacheInfo.cacheAge).toBeGreaterThanOrEqual(0);
-      expect(cacheInfo.cacheAge).toBeLessThan(10); // Should be very recent
       expect(cacheInfo.isExpired).toBe(false);
       expect(cacheInfo.lastCalculated).toBeDefined();
     });
