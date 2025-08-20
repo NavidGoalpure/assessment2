@@ -88,8 +88,8 @@ describe('Pagination Utility', () => {
     test('should handle zero limit', () => {
       const result = paginateResults(testData, 1, 0);
       
-      expect(result.items).toHaveLength(0);
-      expect(result.pagination.itemsPerPage).toBe(0);
+      expect(result.items).toHaveLength(10); // Should default to 10
+      expect(result.pagination.itemsPerPage).toBe(10); // Should default to 10
     });
   });
 

@@ -1,28 +1,38 @@
 /**
  * Paginate an array of results with metadata
- * @param {Array} results - Array of items to paginate
- * @param {number|string} page - Current page number (default: 1)
- * @param {number|string} limit - Items per page (default: 10)
+ * @param {Array} itemsToPaginate - Array of items to paginate
+ * @param {number|string} requestedPage - Current page number (default: 1)
+ * @param {number|string} itemsPerPage - Items per page (default: 10)
  * @returns {Object} Object containing paginated items and pagination metadata
  */
-const paginateResults = (results, page = 1, limit = 10) => {
-  const pageNum = parseInt(page);
-  const limitNum = parseInt(limit);
-  const startIndex = (pageNum - 1) * limitNum;
-  const endIndex = startIndex + limitNum;
+const paginateResults = (itemsToPaginate, requestedPage = 1, itemsPerPage = 10) => {
+  // Handle invalid or non-numeric values
+  let currentPageNumber = parseInt(requestedPage);
+  let itemsPerPageCount = parseInt(itemsPerPage);
   
-  const totalItems = results.length;
-  const totalPages = Math.ceil(totalItems / limitNum);
+  // Validate and set defaults for invalid values
+  if (isNaN(currentPageNumber) || currentPageNumber < 1) {
+    currentPageNumber = 1;
+  }
+  if (isNaN(itemsPerPageCount) || itemsPerPageCount < 1) {
+    itemsPerPageCount = 10;
+  }
+  
+  const sliceStartIndex = (currentPageNumber - 1) * itemsPerPageCount;
+  const sliceEndIndex = sliceStartIndex + itemsPerPageCount;
+  
+  const totalItemCount = itemsToPaginate.length;
+  const totalPageCount = Math.ceil(totalItemCount / itemsPerPageCount);
   
   return {
-    items: results.slice(startIndex, endIndex),
+    items: itemsToPaginate.slice(sliceStartIndex, sliceEndIndex),
     pagination: {
-      currentPage: pageNum,
-      totalPages,
-      totalItems,
-      itemsPerPage: limitNum,
-      hasNextPage: pageNum < totalPages,
-      hasPrevPage: pageNum > 1
+      currentPage: currentPageNumber,
+      totalPages: totalPageCount,
+      totalItems: totalItemCount,
+      itemsPerPage: itemsPerPageCount,
+      hasNextPage: currentPageNumber < totalPageCount,
+      hasPrevPage: currentPageNumber > 1
     }
   };
 };

@@ -3,76 +3,350 @@
     "id": 1,
     "name": "Laptop Pro",
     "category": "Electronics",
-    "price": 2499
+    "price": 2499,
+    "description": "High-performance laptop for professionals"
   },
   {
     "id": 2,
     "name": "Noise Cancelling Headphones",
     "category": "Electronics",
-    "price": 399
+    "price": 399,
+    "description": "Premium wireless headphones with active noise cancellation"
   },
   {
     "id": 3,
     "name": "Ultra-Wide Monitor",
     "category": "Electronics",
-    "price": 999
+    "price": 999,
+    "description": "34-inch curved monitor for immersive gaming and work"
   },
   {
     "id": 4,
     "name": "Ergonomic Chair",
     "category": "Furniture",
-    "price": 799
+    "price": 799,
+    "description": "Comfortable office chair with lumbar support"
   },
   {
     "id": 5,
     "name": "Standing Desk",
     "category": "Furniture",
-    "price": 1199
+    "price": 1199,
+    "description": "Electric adjustable standing desk"
   },
   {
     "id": 6,
     "name": "Wireless Mouse",
     "category": "Electronics",
-    "price": 49
+    "price": 49,
+    "description": "Ergonomic wireless mouse with precision tracking"
   },
   {
     "id": 7,
     "name": "Mechanical Keyboard",
     "category": "Electronics",
-    "price": 129
+    "price": 129,
+    "description": "RGB mechanical keyboard with customizable switches"
   },
   {
     "id": 8,
     "name": "Office Lamp",
     "category": "Furniture",
-    "price": 89
+    "price": 89,
+    "description": "LED desk lamp with adjustable brightness"
   },
   {
     "id": 9,
     "name": "Webcam HD",
     "category": "Electronics",
-    "price": 79
+    "price": 79,
+    "description": "1080p webcam with built-in microphone"
   },
   {
     "id": 10,
     "name": "Desk Organizer",
     "category": "Furniture",
-    "price": 29
+    "price": 29,
+    "description": "Multi-compartment desk organizer"
   },
   {
     "id": 11,
     "name": "USB-C Hub",
     "category": "Electronics",
-    "price": 59
+    "price": 59,
+    "description": "7-port USB-C hub with HDMI and SD card slots"
   },
   {
     "id": 12,
     "name": "Monitor Stand",
     "category": "Furniture",
-    "price": 149
+    "price": 149,
+    "description": "Dual monitor stand with cable management"
   },
   {
-    "name": "Test Item",
-    "id": 1755659358235
+    "id": 13,
+    "name": "Gaming Mouse",
+    "category": "Electronics",
+    "price": 89,
+    "description": "High-DPI gaming mouse with programmable buttons"
+  },
+  {
+    "id": 14,
+    "name": "Bluetooth Speaker",
+    "category": "Electronics",
+    "price": 199,
+    "description": "Portable waterproof Bluetooth speaker"
+  },
+  {
+    "id": 15,
+    "name": "Tablet Pro",
+    "category": "Electronics",
+    "price": 899,
+    "description": "10-inch tablet with stylus support"
+  },
+  {
+    "id": 16,
+    "name": "Office Chair",
+    "category": "Furniture",
+    "price": 299,
+    "description": "Comfortable mesh office chair"
+  },
+  {
+    "id": 17,
+    "name": "Filing Cabinet",
+    "category": "Furniture",
+    "price": 199,
+    "description": "3-drawer filing cabinet with lock"
+  },
+  {
+    "id": 18,
+    "name": "Printer All-in-One",
+    "category": "Electronics",
+    "price": 299,
+    "description": "Wireless all-in-one printer with scanner"
+  },
+  {
+    "id": 19,
+    "name": "External Hard Drive",
+    "category": "Electronics",
+    "price": 129,
+    "description": "2TB external hard drive with USB 3.0"
+  },
+  {
+    "id": 20,
+    "name": "Desk Mat",
+    "category": "Furniture",
+    "price": 39,
+    "description": "Large desk mat with wrist rest"
+  },
+  {
+    "id": 21,
+    "name": "Smartphone",
+    "category": "Electronics",
+    "price": 799,
+    "description": "Latest smartphone with advanced camera"
+  },
+  {
+    "id": 22,
+    "name": "Coffee Maker",
+    "category": "Appliances",
+    "price": 159,
+    "description": "Programmable coffee maker with thermal carafe"
+  },
+  {
+    "id": 23,
+    "name": "Microwave",
+    "category": "Appliances",
+    "price": 129,
+    "description": "Countertop microwave with sensor cooking"
+  },
+  {
+    "id": 24,
+    "name": "Toaster",
+    "category": "Appliances",
+    "price": 49,
+    "description": "2-slice toaster with bagel setting"
+  },
+  {
+    "id": 25,
+    "name": "Blender",
+    "category": "Appliances",
+    "price": 89,
+    "description": "High-speed blender for smoothies and soups"
+  },
+  {
+    "id": 26,
+    "name": "Air Fryer",
+    "category": "Appliances",
+    "price": 119,
+    "description": "Digital air fryer with multiple cooking modes"
+  },
+  {
+    "id": 27,
+    "name": "Rice Cooker",
+    "category": "Appliances",
+    "price": 79,
+    "description": "Programmable rice cooker with steamer basket"
+  },
+  {
+    "id": 28,
+    "name": "Food Processor",
+    "category": "Appliances",
+    "price": 149,
+    "description": "10-cup food processor with multiple attachments"
+  },
+  {
+    "id": 29,
+    "name": "Slow Cooker",
+    "category": "Appliances",
+    "price": 69,
+    "description": "6-quart slow cooker with programmable timer"
+  },
+  {
+    "id": 30,
+    "name": "Electric Kettle",
+    "category": "Appliances",
+    "price": 39,
+    "description": "Stainless steel electric kettle with auto shut-off"
+  },
+  {
+    "id": 31,
+    "name": "Notebook",
+    "category": "Office Supplies",
+    "price": 12,
+    "description": "Spiral-bound notebook with lined pages"
+  },
+  {
+    "id": 32,
+    "name": "Pen Set",
+    "category": "Office Supplies",
+    "price": 8,
+    "description": "Set of 12 colored gel pens"
+  },
+  {
+    "id": 33,
+    "name": "Stapler",
+    "category": "Office Supplies",
+    "price": 15,
+    "description": "Heavy-duty stapler with 20-sheet capacity"
+  },
+  {
+    "id": 34,
+    "name": "Paper Shredder",
+    "category": "Office Supplies",
+    "price": 89,
+    "description": "Cross-cut paper shredder with auto-feed"
+  },
+  {
+    "id": 35,
+    "name": "Whiteboard",
+    "category": "Office Supplies",
+    "price": 45,
+    "description": "4x6 foot magnetic whiteboard with markers"
+  },
+  {
+    "id": 36,
+    "name": "Projector",
+    "category": "Electronics",
+    "price": 599,
+    "description": "HD projector for presentations and home theater"
+  },
+  {
+    "id": 37,
+    "name": "Camera DSLR",
+    "category": "Electronics",
+    "price": 899,
+    "description": "Professional DSLR camera with kit lens"
+  },
+  {
+    "id": 38,
+    "name": "Tripod",
+    "category": "Electronics",
+    "price": 79,
+    "description": "Aluminum tripod with ball head mount"
+  },
+  {
+    "id": 39,
+    "name": "Studio Lights",
+    "category": "Electronics",
+    "price": 199,
+    "description": "LED studio lighting kit with stands"
+  },
+  {
+    "id": 40,
+    "name": "Microphone",
+    "category": "Electronics",
+    "price": 149,
+    "description": "USB condenser microphone for recording"
+  },
+  {
+    "id": 41,
+    "name": "Gaming Headset",
+    "category": "Electronics",
+    "price": 129,
+    "description": "7.1 surround sound gaming headset"
+  },
+  {
+    "id": 42,
+    "name": "Gaming Keyboard",
+    "category": "Electronics",
+    "price": 159,
+    "description": "RGB mechanical gaming keyboard"
+  },
+  {
+    "id": 43,
+    "name": "Gaming Mouse Pad",
+    "category": "Electronics",
+    "price": 25,
+    "description": "Large gaming mouse pad with RGB lighting"
+  },
+  {
+    "id": 44,
+    "name": "Monitor Arm",
+    "category": "Furniture",
+    "price": 89,
+    "description": "Gas spring monitor arm with cable management"
+  },
+  {
+    "id": 45,
+    "name": "Footrest",
+    "category": "Furniture",
+    "price": 59,
+    "description": "Adjustable ergonomic footrest"
+  },
+  {
+    "id": 46,
+    "name": "Desk Shelf",
+    "category": "Furniture",
+    "price": 79,
+    "description": "Monitor riser with storage compartments"
+  },
+  {
+    "id": 47,
+    "name": "Cable Organizer",
+    "category": "Furniture",
+    "price": 19,
+    "description": "Cable management kit with clips and ties"
+  },
+  {
+    "id": 48,
+    "name": "Wall Clock",
+    "category": "Furniture",
+    "price": 35,
+    "description": "Modern wall clock with silent movement"
+  },
+  {
+    "id": 49,
+    "name": "Plant Pot",
+    "category": "Furniture",
+    "price": 29,
+    "description": "Ceramic plant pot with drainage hole"
+  },
+  {
+    "id": 50,
+    "name": "Desk Fan",
+    "category": "Electronics",
+    "price": 45,
+    "description": "USB-powered desk fan with adjustable speed"
   }
 ]

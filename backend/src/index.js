@@ -47,21 +47,26 @@ const startServer = (port) => {
         }, 5000);
     };
 
-    process.on('SIGINT', () => shutdownHandler('SIGINT'));
-    process.on('SIGTERM', () => shutdownHandler('SIGTERM'));
+    process.on('SIGINT', shutdownHandler);
+    process.on('SIGTERM', shutdownHandler);
     process.on('uncaughtException', (err) => {
         console.error('Uncaught Exception:', err);
         shutdownHandler('uncaughtException');
     });
 };
 
-// Kill port BEFORE starting server
-killPort(PORT, 'tcp')
-    .then(() => {
-        console.log(`Port ${PORT} killed. Starting fresh server...`);
-        startServer(PORT);
-    })
-    .catch((err) => {
-        console.warn(`Port ${PORT} may not have been in use. Starting server anyway...`);
-        startServer(PORT);
-    });
+// Only start server if this file is run directly (not imported for testing)
+if (require.main === module) {
+    // Kill port BEFORE starting server
+    killPort(PORT, 'tcp')
+        .then(() => {
+            console.log(`Port ${PORT} killed. Starting fresh server...`);
+            startServer(PORT);
+        })
+        .catch((err) => {
+            console.warn(`Port ${PORT} may not have been in use. Starting server anyway...`);
+            startServer(PORT);
+        });
+}
+
+module.exports = app;

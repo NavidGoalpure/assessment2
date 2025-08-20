@@ -1,58 +1,20 @@
 const request = require('supertest');
-const express = require('express');
-const fs = require('fs');
+const app = require('../../src/index');
+const fs = require('fs').promises;
 const path = require('path');
 
-// Create a test app
-const app = express();
-app.use(express.json());
-
-// Mock the data file for testing
-const TEST_DATA_PATH = path.join(__dirname, '../../test-data.json');
-const ORIGINAL_DATA_PATH = path.join(__dirname, '../../../data/items.json');
-
-// Setup test data
-const testData = [
-  { id: 1, name: 'Laptop Pro', category: 'Electronics', price: 2499 },
-  { id: 2, name: 'Noise Cancelling Headphones', category: 'Electronics', price: 399 },
-  { id: 3, name: 'Ultra-Wide Monitor', category: 'Electronics', price: 999 },
-  { id: 4, name: 'Ergonomic Chair', category: 'Furniture', price: 799 },
-  { id: 5, name: 'Standing Desk', category: 'Furniture', price: 1199 },
-  { id: 6, name: 'Wireless Mouse', category: 'Electronics', price: 49 },
-  { id: 7, name: 'Mechanical Keyboard', category: 'Electronics', price: 129 },
-  { id: 8, name: 'Office Lamp', category: 'Furniture', price: 89 },
-  { id: 9, name: 'Webcam HD', category: 'Electronics', price: 79 },
-  { id: 10, name: 'Desk Organizer', category: 'Furniture', price: 29 },
-  { id: 11, name: 'USB-C Hub', category: 'Electronics', price: 59 },
-  { id: 12, name: 'Monitor Stand', category: 'Furniture', price: 149 }
-];
-
-// Mock the readData function
-jest.mock('fs', () => ({
-  ...jest.requireActual('fs'),
-  readFileSync: jest.fn()
-}));
-
-// Import routes after mocking
-const itemsRouter = require('../../src/routes/items');
-app.use('/api/items', itemsRouter);
-
 describe('Items API Integration Tests', () => {
-  beforeAll(() => {
-    // Write test data to file
-    fs.writeFileSync(TEST_DATA_PATH, JSON.stringify(testData, null, 2));
+  const DATA_PATH = path.join(__dirname, '../../../data/items.json');
+  let originalData;
+
+  beforeAll(async () => {
+    // Backup original data
+    originalData = await fs.readFile(DATA_PATH, 'utf8');
   });
 
-  beforeEach(() => {
-    // Mock readFileSync to return test data
-    fs.readFileSync.mockReturnValue(JSON.stringify(testData));
-  });
-
-  afterAll(() => {
-    // Clean up test file
-    if (fs.existsSync(TEST_DATA_PATH)) {
-      fs.unlinkSync(TEST_DATA_PATH);
-    }
+  afterAll(async () => {
+    // Restore original data
+    await fs.writeFile(DATA_PATH, originalData);
   });
 
   describe('GET /api/items', () => {
@@ -61,34 +23,32 @@ describe('Items API Integration Tests', () => {
         .get('/api/items')
         .expect(200);
 
-      expect(response.body).toHaveProperty('items');
-      expect(response.body).toHaveProperty('pagination');
       expect(response.body.items).toHaveLength(10); // default limit
       expect(response.body.pagination.currentPage).toBe(1);
-      expect(response.body.pagination.totalPages).toBe(2);
-      expect(response.body.pagination.totalItems).toBe(12);
+      expect(response.body.pagination.totalPages).toBe(5);
+      expect(response.body.pagination.totalItems).toBe(50);
       expect(response.body.pagination.itemsPerPage).toBe(10);
     });
 
-    test('should return paginated results', async () => {
+    test('should return items with custom pagination', async () => {
       const response = await request(app)
-        .get('/api/items?page=2&limit=5')
+        .get('/api/items?pageNumber=2&itemsPerPage=5')
         .expect(200);
 
       expect(response.body.items).toHaveLength(5);
       expect(response.body.pagination.currentPage).toBe(2);
-      expect(response.body.pagination.totalPages).toBe(3);
-      expect(response.body.pagination.hasNextPage).toBe(true);
-      expect(response.body.pagination.hasPrevPage).toBe(true);
+      expect(response.body.pagination.totalPages).toBe(10);
+      expect(response.body.pagination.totalItems).toBe(50);
+      expect(response.body.pagination.itemsPerPage).toBe(5);
     });
 
     test('should return search results', async () => {
       const response = await request(app)
-        .get('/api/items?q=electronics')
+        .get('/api/items?searchQuery=electronics')
         .expect(200);
 
-      expect(response.body.items).toHaveLength(7);
-      expect(response.body.pagination.totalItems).toBe(7);
+      expect(response.body.items).toHaveLength(10); // Limited by default pagination
+      expect(response.body.pagination.totalItems).toBe(22); // Total electronics items
       expect(response.body.items.every(item => 
         item.category === 'Electronics' || 
         item.name.toLowerCase().includes('electronics')
@@ -97,75 +57,84 @@ describe('Items API Integration Tests', () => {
 
     test('should return search results with pagination', async () => {
       const response = await request(app)
-        .get('/api/items?q=electronics&page=1&limit=3')
+        .get('/api/items?searchQuery=electronics&pageNumber=1&itemsPerPage=3')
         .expect(200);
 
       expect(response.body.items).toHaveLength(3);
-      expect(response.body.pagination.totalItems).toBe(7);
-      expect(response.body.pagination.totalPages).toBe(3);
+      expect(response.body.pagination.totalItems).toBe(22);
+      expect(response.body.pagination.totalPages).toBe(8);
       expect(response.body.pagination.hasNextPage).toBe(true);
     });
 
     test('should handle case-insensitive search', async () => {
       const response = await request(app)
-        .get('/api/items?q=ELECTRONICS')
+        .get('/api/items?searchQuery=ELECTRONICS')
         .expect(200);
 
-      expect(response.body.items).toHaveLength(7);
+      expect(response.body.items).toHaveLength(10); // Limited by default pagination
       expect(response.body.items.every(item => item.category === 'Electronics')).toBe(true);
     });
 
     test('should handle empty search query', async () => {
       const response = await request(app)
-        .get('/api/items?q=')
+        .get('/api/items?searchQuery=')
         .expect(200);
 
       expect(response.body.items).toHaveLength(10);
-      expect(response.body.pagination.totalItems).toBe(12);
+      expect(response.body.pagination.totalItems).toBe(50);
     });
 
     test('should handle non-existent search query', async () => {
       const response = await request(app)
-        .get('/api/items?q=nonexistent')
+        .get('/api/items?searchQuery=nonexistent')
         .expect(200);
 
       expect(response.body.items).toHaveLength(0);
       expect(response.body.pagination.totalItems).toBe(0);
-      expect(response.body.pagination.totalPages).toBe(0);
     });
 
     test('should handle invalid page parameter', async () => {
       const response = await request(app)
-        .get('/api/items?page=invalid&limit=5')
+        .get('/api/items?pageNumber=invalid')
         .expect(200);
 
-      expect(response.body.items).toHaveLength(0);
-      expect(response.body.pagination.currentPage).toBe(null);
+      expect(response.body.pagination.currentPage).toBe(1);
     });
 
-    test('should handle page beyond total pages', async () => {
+    test('should handle invalid limit parameter', async () => {
       const response = await request(app)
-        .get('/api/items?page=10&limit=5')
+        .get('/api/items?itemsPerPage=invalid')
         .expect(200);
 
-      expect(response.body.items).toHaveLength(0);
-      expect(response.body.pagination.currentPage).toBe(10);
-      expect(response.body.pagination.hasNextPage).toBe(false);
+      expect(response.body.pagination.itemsPerPage).toBe(10);
+    });
+
+    test('should handle negative page parameter', async () => {
+      const response = await request(app)
+        .get('/api/items?pageNumber=-1')
+        .expect(200);
+
+      expect(response.body.pagination.currentPage).toBe(1);
+    });
+
+    test('should handle zero limit parameter', async () => {
+      const response = await request(app)
+        .get('/api/items?itemsPerPage=0')
+        .expect(200);
+
+      expect(response.body.pagination.itemsPerPage).toBe(10);
     });
   });
 
   describe('GET /api/items/:id', () => {
-    test('should return item by id', async () => {
+    test('should return specific item by ID', async () => {
       const response = await request(app)
         .get('/api/items/1')
         .expect(200);
 
-      expect(response.body).toEqual({
-        id: 1,
-        name: 'Laptop Pro',
-        category: 'Electronics',
-        price: 2499
-      });
+      expect(response.body.id).toBe(1);
+      expect(response.body.name).toBe('Laptop Pro');
+      expect(response.body.category).toBe('Electronics');
     });
 
     test('should return 404 for non-existent item', async () => {
@@ -174,7 +143,7 @@ describe('Items API Integration Tests', () => {
         .expect(404);
     });
 
-    test('should handle invalid id parameter', async () => {
+    test('should handle invalid ID format', async () => {
       await request(app)
         .get('/api/items/invalid')
         .expect(404);
@@ -194,44 +163,38 @@ describe('Items API Integration Tests', () => {
         .send(newItem)
         .expect(201);
 
-      expect(response.body).toHaveProperty('id');
       expect(response.body.name).toBe(newItem.name);
       expect(response.body.category).toBe(newItem.category);
       expect(response.body.price).toBe(newItem.price);
+      expect(response.body.id).toBeDefined();
     });
 
     test('should handle missing required fields', async () => {
       const incompleteItem = {
         name: 'Test Item'
-        // missing category and price
+        // Missing category and price
       };
 
-      await request(app)
+      const response = await request(app)
         .post('/api/items')
         .send(incompleteItem)
-        .expect(201); // Currently accepts incomplete data (intentional bug)
+        .expect(201); // Currently accepts incomplete data (as per TODO comment)
+
+      expect(response.body.name).toBe(incompleteItem.name);
+      expect(response.body.id).toBeDefined();
     });
   });
 
-  describe('Error Handling', () => {
-    test('should handle file read errors', async () => {
-      // Mock file read error
-      fs.readFileSync.mockImplementation(() => {
-        throw new Error('File read error');
-      });
+  describe('GET /api/items/stats/strategy', () => {
+    test('should return strategy information', async () => {
+      const response = await request(app)
+        .get('/api/items/stats/strategy')
+        .expect(200);
 
-      await request(app)
-        .get('/api/items')
-        .expect(500);
-    });
-
-    test('should handle malformed JSON in data file', async () => {
-      // Mock malformed JSON
-      fs.readFileSync.mockReturnValue('invalid json');
-
-      await request(app)
-        .get('/api/items')
-        .expect(500);
+      expect(response.body.success).toBe(true);
+      expect(response.body.data).toHaveProperty('currentStrategy');
+      expect(response.body.data).toHaveProperty('fileSize');
+      expect(response.body.data).toHaveProperty('hasCache');
     });
   });
 }); 

@@ -1,19 +1,19 @@
 /**
  * Search items by name or category
- * @param {Array} items - Array of items to search
- * @param {string} query - Search query
+ * @param {Array} itemsToSearch - Array of items to search
+ * @param {string} searchQuery - Search query
  * @returns {Array} Filtered array of items matching the search query
  */
-const searchItems = (items, query) => {
-  if (!query || query.trim() === '') {
-    return items;
+const searchItems = (itemsToSearch, searchQuery) => {
+  if (!searchQuery || searchQuery.trim() === '') {
+    return itemsToSearch;
   }
   
-  const searchTerm = query.toLowerCase().trim();
+  const normalizedSearchTerm = searchQuery.toLowerCase().trim();
   
-  return items.filter(item => 
-    item.name.toLowerCase().includes(searchTerm) ||
-    item.category.toLowerCase().includes(searchTerm)
+  return itemsToSearch.filter(item => 
+    item.name.toLowerCase().includes(normalizedSearchTerm) ||
+    item.category.toLowerCase().includes(normalizedSearchTerm)
   );
 };
 
