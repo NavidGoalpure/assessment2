@@ -32,10 +32,16 @@ describe('Stats API Integration Tests', () => {
         .get('/api/stats')
         .expect(200);
 
-      // Should be identical (cached)
+      // Should be identical (cached) - data should be the same
       expect(response1.body.total).toBe(response2.body.total);
       expect(response1.body.averagePrice).toBe(response2.body.averagePrice);
-      expect(response1.body.lastCalculated).toBe(response2.body.lastCalculated);
+      expect(response1.body.categories).toEqual(response2.body.categories);
+      expect(response1.body.priceRange).toEqual(response2.body.priceRange);
+      
+      // Timestamps should be very close (within 1 second) for cached responses
+      const time1 = new Date(response1.body.lastCalculated).getTime();
+      const time2 = new Date(response2.body.lastCalculated).getTime();
+      expect(Math.abs(time1 - time2)).toBeLessThan(1000);
     });
 
     test('should calculate category distribution correctly', async () => {

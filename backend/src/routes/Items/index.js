@@ -38,6 +38,20 @@ router.get('/', async (req, res) => {
   }
 });
 
+// GET /api/items/stats/strategy - Get strategy information
+router.get('/stats/strategy', async (req, res) => {
+  try {
+    const strategyInfo = await itemsService.getStrategyInfo();
+    res.json({
+      success: true,
+      data: strategyInfo
+    });
+  } catch (error) {
+    console.error('Error fetching strategy info:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // GET /api/items/:id - Get item by ID
 router.get('/:id', async (req, res) => {
   try {

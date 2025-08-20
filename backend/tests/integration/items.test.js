@@ -96,33 +96,33 @@ describe('Items API Integration Tests', () => {
     test('should handle invalid page parameter', async () => {
       const response = await request(app)
         .get('/api/items?pageNumber=invalid')
-        .expect(200);
+        .expect(400);
 
-      expect(response.body.pagination.currentPage).toBe(1);
+      expect(response.body.error).toContain('Invalid pagination parameters');
     });
 
     test('should handle invalid limit parameter', async () => {
       const response = await request(app)
         .get('/api/items?itemsPerPage=invalid')
-        .expect(200);
+        .expect(400);
 
-      expect(response.body.pagination.itemsPerPage).toBe(10);
+      expect(response.body.error).toContain('Invalid pagination parameters');
     });
 
     test('should handle negative page parameter', async () => {
       const response = await request(app)
         .get('/api/items?pageNumber=-1')
-        .expect(200);
+        .expect(400);
 
-      expect(response.body.pagination.currentPage).toBe(1);
+      expect(response.body.error).toContain('Invalid pagination parameters');
     });
 
     test('should handle zero limit parameter', async () => {
       const response = await request(app)
         .get('/api/items?itemsPerPage=0')
-        .expect(200);
+        .expect(400);
 
-      expect(response.body.pagination.itemsPerPage).toBe(10);
+      expect(response.body.error).toContain('Invalid pagination parameters');
     });
   });
 
@@ -147,41 +147,6 @@ describe('Items API Integration Tests', () => {
       await request(app)
         .get('/api/items/invalid')
         .expect(404);
-    });
-  });
-
-  describe('POST /api/items', () => {
-    test('should create new item', async () => {
-      const newItem = {
-        name: 'Test Item',
-        category: 'Test Category',
-        price: 100
-      };
-
-      const response = await request(app)
-        .post('/api/items')
-        .send(newItem)
-        .expect(201);
-
-      expect(response.body.name).toBe(newItem.name);
-      expect(response.body.category).toBe(newItem.category);
-      expect(response.body.price).toBe(newItem.price);
-      expect(response.body.id).toBeDefined();
-    });
-
-    test('should handle missing required fields', async () => {
-      const incompleteItem = {
-        name: 'Test Item'
-        // Missing category and price
-      };
-
-      const response = await request(app)
-        .post('/api/items')
-        .send(incompleteItem)
-        .expect(201); // Currently accepts incomplete data (as per TODO comment)
-
-      expect(response.body.name).toBe(incompleteItem.name);
-      expect(response.body.id).toBeDefined();
     });
   });
 

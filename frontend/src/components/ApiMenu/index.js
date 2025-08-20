@@ -38,6 +38,13 @@ const ApiMenuPage = () => {
           ],
           example: '/api/items/1',
           testUrl: `${API_BASE_URL}/api/items/1`
+        },
+        {
+          method: 'GET',
+          endpoint: '/api/items/stats/strategy',
+          description: 'Get strategy information about data loading and caching',
+          example: '/api/items/stats/strategy',
+          testUrl: `${API_BASE_URL}/api/items/stats/strategy`
         }
       ]
     },
@@ -52,6 +59,34 @@ const ApiMenuPage = () => {
           description: 'Get comprehensive statistics (cached for 5 minutes)',
           example: '/api/stats',
           testUrl: `${API_BASE_URL}/api/stats`
+        },
+        {
+          method: 'POST',
+          endpoint: '/api/stats/refresh',
+          description: 'Force refresh stats cache manually',
+          example: '/api/stats/refresh',
+          testUrl: `${API_BASE_URL}/api/stats/refresh`
+        },
+        {
+          method: 'GET',
+          endpoint: '/api/stats/cache-info',
+          description: 'Get cache information and status',
+          example: '/api/stats/cache-info',
+          testUrl: `${API_BASE_URL}/api/stats/cache-info`
+        }
+      ]
+    },
+    system: {
+      title: 'System API',
+      description: 'System health and monitoring endpoints',
+      icon: '🔧',
+      routes: [
+        {
+          method: 'GET',
+          endpoint: '/health',
+          description: 'Health check endpoint to verify server status',
+          example: '/health',
+          testUrl: `${API_BASE_URL}/health`
         }
       ]
     }
