@@ -41,109 +41,83 @@ function Items() {
 
   // Virtualized item component
   const ItemComponent = ({ item }) => (
-    <div style={{ 
-      padding: '10px', 
-      border: '1px solid #ddd', 
-      marginBottom: '10px',
-      borderRadius: '4px',
-      backgroundColor: 'white'
-    }}>
-      <Link to={'/items/' + item.id} style={{ 
-        textDecoration: 'none', 
-        color: '#007bff',
-        fontSize: '16px',
-        display: 'block',
-        marginBottom: '4px'
-      }}>
+    <div className="p-4 border border-gray-200 mb-3 rounded-lg bg-white hover:shadow-md transition-shadow duration-200">
+      <Link 
+        to={'/items/' + item.id} 
+        className="text-blue-600 hover:text-blue-800 text-lg font-medium block mb-2 no-underline"
+      >
         {item.name}
       </Link>
-      <div style={{ color: '#666', fontSize: '14px' }}>
+      <div className="text-gray-600 text-sm">
         Category: {item.category} | Price: ${item.price}
       </div>
     </div>
   );
 
-  if (loading && !items.length) return <p>Loading...</p>;
+  if (loading && !items.length) return (
+    <div className="flex justify-center items-center h-64">
+      <p className="text-gray-600 text-lg">Loading...</p>
+    </div>
+  );
 
   return (
-    <div style={{ padding: '20px' }}>
+    <div className="p-6 max-w-6xl mx-auto">
       {/* Search Form */}
-      <form onSubmit={handleSearch} style={{ marginBottom: '20px' }}>
-        <input
-          type="text"
-          value={searchInput}
-          onChange={(e) => setSearchInput(e.target.value)}
-          placeholder="Search items by name or category..."
-          style={{ 
-            padding: '8px 12px', 
-            fontSize: '16px', 
-            width: '300px',
-            marginRight: '10px'
-          }}
-        />
-        <button 
-          type="submit"
-          style={{ 
-            padding: '8px 16px', 
-            fontSize: '16px',
-            backgroundColor: '#007bff',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            marginRight: '10px'
-          }}
-        >
-          Search
-        </button>
-        
-        {/* Page Size Selector */}
-        <select
-          value={pageSize}
-          onChange={(e) => handlePageSizeChange(parseInt(e.target.value))}
-          style={{
-            padding: '8px 12px',
-            fontSize: '16px',
-            border: '1px solid #ddd',
-            borderRadius: '4px',
-            backgroundColor: 'white'
-          }}
-        >
-          <option value={10}>10 items per page</option>
-          <option value={25}>25 items per page</option>
-          <option value={50}>50 items per page</option>
-        </select>
+      <form onSubmit={handleSearch} className="mb-6">
+        <div className="flex flex-wrap items-center gap-4">
+          <input
+            type="text"
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            placeholder="Search items by name or category..."
+            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+          <button 
+            type="submit"
+            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium"
+          >
+            Search
+          </button>
+          
+          {/* Page Size Selector */}
+          <select
+            value={pageSize}
+            onChange={(e) => handlePageSizeChange(parseInt(e.target.value))}
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+          >
+            <option value={10}>10 items per page</option>
+            <option value={25}>25 items per page</option>
+            <option value={50}>50 items per page</option>
+          </select>
+        </div>
       </form>
 
       {/* Search Results Info */}
       {searchQuery && (
-        <p style={{ marginBottom: '20px', color: '#666' }}>
+        <p className="mb-6 text-gray-600">
           Search results for "{searchQuery}": {pagination.totalItems} items found
         </p>
       )}
 
       {/* Virtualized Items List */}
       {items.length > 0 ? (
-        <div style={{ 
-          height: '600px', 
-          border: '1px solid #eee',
-          borderRadius: '4px',
-          backgroundColor: '#f9f9f9'
-        }}>
+        <div className="h-96 border border-gray-200 rounded-lg bg-gray-50 overflow-hidden">
           <Virtuoso
             data={items}
             itemContent={(index, item) => <ItemComponent item={item} />}
-            style={{ height: '100%' }}
+            className="h-full"
             overscan={5}
             components={{
               Footer: () => (
-                <div style={{ padding: '10px', textAlign: 'center', color: '#666' }}>
-                  Showing {items.length} of {pagination.totalItems} items
-                  {pagination.totalPages > 1 && (
-                    <span> (Page {pagination.currentPage} of {pagination.totalPages})</span>
-                  )}
+                <div className="p-4 text-center text-gray-600 bg-white border-t border-gray-200">
+                  <div>
+                    Showing {items.length} of {pagination.totalItems} items
+                    {pagination.totalPages > 1 && (
+                      <span> (Page {pagination.currentPage} of {pagination.totalPages})</span>
+                    )}
+                  </div>
                   {pageSize > 10 && (
-                    <div style={{ fontSize: '12px', marginTop: '5px' }}>
+                    <div className="text-xs mt-2 text-gray-500">
                       Using virtualization for smooth performance
                     </div>
                   )}
@@ -153,48 +127,38 @@ function Items() {
           />
         </div>
       ) : (
-        <p>No items found.</p>
+        <div className="text-center py-12">
+          <p className="text-gray-600 text-lg">No items found.</p>
+        </div>
       )}
 
       {/* Pagination Controls - Show when there are multiple pages */}
       {pagination.totalPages > 1 && (
-        <div style={{ 
-          marginTop: '20px', 
-          display: 'flex', 
-          justifyContent: 'center', 
-          alignItems: 'center',
-          gap: '10px'
-        }}>
+        <div className="mt-6 flex justify-center items-center gap-4">
           <button
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={!pagination.hasPrevPage}
-            style={{ 
-              padding: '8px 12px',
-              backgroundColor: pagination.hasPrevPage ? '#007bff' : '#ccc',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: pagination.hasPrevPage ? 'pointer' : 'not-allowed'
-            }}
+            className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
+              pagination.hasPrevPage 
+                ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            }`}
           >
             Previous
           </button>
           
-          <span style={{ padding: '8px 12px' }}>
+          <span className="px-4 py-2 text-gray-700">
             Page {pagination.currentPage} of {pagination.totalPages}
           </span>
           
           <button
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={!pagination.hasNextPage}
-            style={{ 
-              padding: '8px 12px',
-              backgroundColor: pagination.hasNextPage ? '#007bff' : '#ccc',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: pagination.hasNextPage ? 'pointer' : 'not-allowed'
-            }}
+            className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
+              pagination.hasNextPage 
+                ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            }`}
           >
             Next
           </button>
@@ -203,7 +167,9 @@ function Items() {
 
       {/* Loading indicator for pagination */}
       {loading && items.length > 0 && (
-        <p style={{ textAlign: 'center', marginTop: '20px' }}>Loading...</p>
+        <div className="text-center mt-6">
+          <p className="text-gray-600">Loading...</p>
+        </div>
       )}
     </div>
   );
