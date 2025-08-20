@@ -34,7 +34,12 @@ This project includes comprehensive test suites for both backend and frontend co
 ### Backend Tests
 
 **Test Structure:**
-- **Unit Tests**: Test individual utility functions (pagination, search)
+- **Unit Tests**: Test individual utility functions and services
+  - `DataManager` - Data loading and caching
+  - `Search` - Item filtering functionality
+  - `ItemsService` - Business logic for items
+  - `StatsService` - Statistics calculation
+  - `Pagination` - Pagination utilities
 - **Integration Tests**: Test complete API endpoints and workflows
 
 **Running Tests:**
@@ -44,24 +49,14 @@ cd backend
 # Run all tests
 npm test
 
-# Run tests in watch mode
-npm run test:watch
-
-# Generate coverage report
-npm run test:coverage
-
 # Run only unit tests
-npm run test:unit
+npm test -- --testPathPattern="unit"
 
 # Run only integration tests
-npm run test:integration
+npm test -- --testPathPattern="integration"
 ```
 
 ### Frontend Tests
-
-**Test Structure:**
-- **Unit Tests**: Test individual React components and context
-- **Integration Tests**: Test complete user workflows and interactions
 
 **Running Tests:**
 ```bash
@@ -71,25 +66,12 @@ cd frontend
 npm test
 
 # Run tests in watch mode
-npm run test:watch
+npm test -- --watch
 
-# Generate coverage report
-npm run test:coverage
-
-# Run only unit tests
-npm run test:unit
-
-# Run only integration tests
-npm run test:integration
+# Run tests without watch mode
+npm test -- --watchAll=false
 ```
 
-**Test Coverage:**
-- ✅ Memory leak prevention with AbortController
-- ✅ Pagination and search functionality
-- ✅ Component rendering and user interactions
-- ✅ Error handling and loading states
-- ✅ API integration and state management
-- ✅ Complete user workflows
 
 ## ⏰ Time Expectation
 

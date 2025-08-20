@@ -1,154 +1,97 @@
-const { searchItems } = require('../../src/utils/search');
+const { filterItems } = require('../../src/utils/Search');
 
 describe('Search Utility', () => {
   const testData = [
-    { id: 1, name: 'Laptop Pro', category: 'Electronics', price: 2499 },
-    { id: 2, name: 'Noise Cancelling Headphones', category: 'Electronics', price: 399 },
-    { id: 3, name: 'Ultra-Wide Monitor', category: 'Electronics', price: 999 },
-    { id: 4, name: 'Ergonomic Chair', category: 'Furniture', price: 799 },
-    { id: 5, name: 'Standing Desk', category: 'Furniture', price: 1199 },
-    { id: 6, name: 'Wireless Mouse', category: 'Electronics', price: 49 },
-    { id: 7, name: 'Mechanical Keyboard', category: 'Electronics', price: 129 },
-    { id: 8, name: 'Office Lamp', category: 'Furniture', price: 89 },
-    { id: 9, name: 'Webcam HD', category: 'Electronics', price: 79 },
-    { id: 10, name: 'Desk Organizer', category: 'Furniture', price: 29 }
+    { id: 1, name: 'Laptop', category: 'Electronics', price: 999, description: 'High-performance laptop' },
+    { id: 2, name: 'Chair', category: 'Furniture', price: 199, description: 'Comfortable office chair' },
+    { id: 3, name: 'Phone', category: 'Electronics', price: 599, description: 'Smartphone with camera' },
+    { id: 4, name: 'Table', category: 'Furniture', price: 299, description: 'Wooden dining table' },
+    { id: 5, name: 'Monitor', category: 'Electronics', price: 399, description: '4K display monitor' }
   ];
 
-  describe('Name Search', () => {
-    test('should find items by exact name match', () => {
-      const result = searchItems(testData, 'Laptop Pro');
-      
-      expect(result).toHaveLength(1);
-      expect(result[0].id).toBe(1);
-      expect(result[0].name).toBe('Laptop Pro');
+  describe('filterItems', () => {
+    test('should return all items when search query is empty', () => {
+      const result = filterItems(testData, '');
+      expect(result).toEqual(testData);
     });
 
-    test('should find items by partial name match', () => {
-      const result = searchItems(testData, 'laptop');
-      
-      expect(result).toHaveLength(1);
-      expect(result[0].id).toBe(1);
-      expect(result[0].name).toBe('Laptop Pro');
+    test('should return all items when search query is null or undefined', () => {
+      expect(filterItems(testData, null)).toEqual(testData);
+      expect(filterItems(testData, undefined)).toEqual(testData);
     });
 
-    test('should be case insensitive', () => {
-      const result = searchItems(testData, 'LAPTOP');
-      
+    test('should search by name (case-insensitive)', () => {
+      const result = filterItems(testData, 'laptop');
       expect(result).toHaveLength(1);
-      expect(result[0].id).toBe(1);
+      expect(result[0].name).toBe('Laptop');
     });
 
-    test('should find multiple items with same partial match', () => {
-      const result = searchItems(testData, 'mouse');
-      
-      expect(result).toHaveLength(1);
-      expect(result[0].name).toBe('Wireless Mouse');
-    });
-  });
-
-  describe('Category Search', () => {
-    test('should find items by exact category match', () => {
-      const result = searchItems(testData, 'Electronics');
-      
-      expect(result).toHaveLength(6);
+    test('should search by category (case-insensitive)', () => {
+      const result = filterItems(testData, 'electronics');
+      expect(result).toHaveLength(3);
       expect(result.every(item => item.category === 'Electronics')).toBe(true);
     });
 
-    test('should find items by partial category match', () => {
-      const result = searchItems(testData, 'electronics');
-      
-      expect(result).toHaveLength(6);
-      expect(result.every(item => item.category === 'Electronics')).toBe(true);
-    });
-
-    test('should find furniture items', () => {
-      const result = searchItems(testData, 'furniture');
-      
-      expect(result).toHaveLength(4);
-      expect(result.every(item => item.category === 'Furniture')).toBe(true);
-    });
-  });
-
-  describe('Cross-Field Search', () => {
-    test('should find items matching name or category', () => {
-      const result = searchItems(testData, 'electronics');
-      
-      expect(result).toHaveLength(6);
-      const electronicsItems = result.filter(item => item.category === 'Electronics');
-      expect(electronicsItems).toHaveLength(6);
-    });
-
-    test('should handle search term that appears in both name and category', () => {
-      // This test would be more relevant if we had items with category names in their item names
-      const result = searchItems(testData, 'pro');
-      
+    test('should search by description (case-insensitive)', () => {
+      const result = filterItems(testData, 'camera');
       expect(result).toHaveLength(1);
-      expect(result[0].name).toBe('Laptop Pro');
-    });
-  });
-
-  describe('Edge Cases', () => {
-    test('should return all items for empty query', () => {
-      const result = searchItems(testData, '');
-      
-      expect(result).toHaveLength(10);
-      expect(result).toEqual(testData);
+      expect(result[0].name).toBe('Phone');
     });
 
-    test('should return all items for null query', () => {
-      const result = searchItems(testData, null);
-      
-      expect(result).toHaveLength(10);
-      expect(result).toEqual(testData);
+    test('should search across multiple fields', () => {
+      const result = filterItems(testData, 'office');
+      expect(result).toHaveLength(1);
+      expect(result[0].name).toBe('Chair');
     });
 
-    test('should return all items for undefined query', () => {
-      const result = searchItems(testData, undefined);
-      
-      expect(result).toHaveLength(10);
-      expect(result).toEqual(testData);
-    });
-
-    test('should return all items for whitespace-only query', () => {
-      const result = searchItems(testData, '   ');
-      
-      expect(result).toHaveLength(10);
-      expect(result).toEqual(testData);
-    });
-
-    test('should handle empty data array', () => {
-      const result = searchItems([], 'laptop');
-      
-      expect(result).toHaveLength(0);
+    test('should handle partial matches', () => {
+      const result = filterItems(testData, 'lap');
+      expect(result).toHaveLength(1);
+      expect(result[0].name).toBe('Laptop');
     });
 
     test('should return empty array for no matches', () => {
-      const result = searchItems(testData, 'nonexistent');
-      
-      expect(result).toHaveLength(0);
+      const result = filterItems(testData, 'nonexistent');
+      expect(result).toEqual([]);
     });
 
-    test('should trim whitespace from query', () => {
-      const result = searchItems(testData, '  laptop  ');
-      
+    test('should handle special characters in search query', () => {
+      const result = filterItems(testData, '4K');
       expect(result).toHaveLength(1);
-      expect(result[0].name).toBe('Laptop Pro');
-    });
-  });
-
-  describe('Special Characters', () => {
-    test('should handle special characters in search', () => {
-      const result = searchItems(testData, 'ultra-wide');
-      
-      expect(result).toHaveLength(1);
-      expect(result[0].name).toBe('Ultra-Wide Monitor');
+      expect(result[0].name).toBe('Monitor');
     });
 
-    test('should handle numbers in search', () => {
-      const result = searchItems(testData, 'hd');
-      
+    test('should handle numbers in search query', () => {
+      const result = filterItems(testData, '4K');
       expect(result).toHaveLength(1);
-      expect(result[0].name).toBe('Webcam HD');
+      expect(result[0].name).toBe('Monitor');
+    });
+
+    test('should handle empty data array', () => {
+      const result = filterItems([], 'test');
+      expect(result).toEqual([]);
+    });
+
+    test('should handle items with missing properties', () => {
+      const incompleteData = [
+        { id: 1, name: 'Test Item' },
+        { id: 2, category: 'Electronics' },
+        { id: 3, price: 100 }
+      ];
+
+      const result = filterItems(incompleteData, 'test');
+      expect(result).toHaveLength(1);
+      expect(result[0].name).toBe('Test Item');
+    });
+
+    test('should handle items with null/undefined properties', () => {
+      const dataWithNulls = [
+        { id: 1, name: 'Test Item', category: null, description: undefined },
+        { id: 2, name: null, category: 'Electronics', description: 'Test description' }
+      ];
+
+      const result = filterItems(dataWithNulls, 'test');
+      expect(result).toHaveLength(2);
     });
   });
 }); 

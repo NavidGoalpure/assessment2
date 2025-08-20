@@ -36,7 +36,7 @@ const ItemCard = ({ item }) => {
 
   return (
     <Link to={'/items/' + item.id} className="block">
-      <div className="group bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md hover:border-blue-300 transition-all duration-200 p-3">
+      <div className="mb-2 group bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md hover:border-blue-300 transition-all duration-200 p-3">
         <div className="flex items-center space-x-3">
           {/* Category emoji and badge */}
           <div className="flex flex-col items-center space-y-1 min-w-0">

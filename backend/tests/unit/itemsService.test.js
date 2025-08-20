@@ -1,147 +1,78 @@
-const ItemsService = require('../../src/services/itemsService');
+const itemsService = require('../../src/services/ItemsService');
 
-// Mock the SmartDataManager
-jest.mock('../../src/utils/dataManager');
+// Mock the DataManager
+jest.mock('../../src/utils/DataManager');
 
 describe('ItemsService Unit Tests', () => {
-  let itemsService;
-  let mockDataManager;
-
   beforeEach(() => {
+    // Clear all mocks before each test
     jest.clearAllMocks();
-    itemsService = new ItemsService();
-    mockDataManager = itemsService.dataManager;
   });
 
-  describe('getItems', () => {
-    test('should return paginated and filtered items', async () => {
+  describe('getAllItems', () => {
+    test('should return all items from data manager', async () => {
       const mockItems = [
-        { id: 1, name: 'Laptop', category: 'Electronics', price: 999 },
-        { id: 2, name: 'Chair', category: 'Furniture', price: 199 },
-        { id: 3, name: 'Phone', category: 'Electronics', price: 599 }
+        { id: 1, name: 'Test Item 1', category: 'Electronics', price: 100 },
+        { id: 2, name: 'Test Item 2', category: 'Furniture', price: 200 }
       ];
 
-      mockDataManager.getData.mockResolvedValue(mockItems);
+      // Mock the dataManager.getAllItems method
+      const mockDataManager = require('../../src/utils/DataManager');
+      mockDataManager.getAllItems.mockResolvedValue(mockItems);
 
-      const result = await itemsService.getItems('electronics', 1, 2);
+      const result = await itemsService.getAllItems();
 
-      expect(result.items).toHaveLength(2);
-      expect(result.pagination.totalItems).toBe(2);
-      expect(result.pagination.currentPage).toBe(1);
-      expect(result.pagination.itemsPerPage).toBe(2);
+      expect(mockDataManager.getAllItems).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(mockItems);
     });
 
-    test('should handle empty search query', async () => {
-      const mockItems = [
-        { id: 1, name: 'Laptop', category: 'Electronics', price: 999 }
-      ];
+    test('should handle data manager errors', async () => {
+      const mockDataManager = require('../../src/utils/DataManager');
+      mockDataManager.getAllItems.mockRejectedValue(new Error('Data load failed'));
 
-      mockDataManager.getData.mockResolvedValue(mockItems);
-
-      const result = await itemsService.getItems('', 1, 10);
-
-      expect(result.items).toHaveLength(1);
-      expect(result.pagination.totalItems).toBe(1);
+      await expect(itemsService.getAllItems()).rejects.toThrow('Data load failed');
     });
   });
 
   describe('getItemById', () => {
-    test('should return item when found', async () => {
+    test('should return item by ID', async () => {
       const mockItems = [
-        { id: 1, name: 'Laptop', category: 'Electronics', price: 999 }
+        { id: 1, name: 'Test Item 1', category: 'Electronics', price: 100 },
+        { id: 2, name: 'Test Item 2', category: 'Furniture', price: 200 }
       ];
 
-      mockDataManager.getData.mockResolvedValue(mockItems);
+      const mockDataManager = require('../../src/utils/DataManager');
+      mockDataManager.getAllItems.mockResolvedValue(mockItems);
 
-      const item = await itemsService.getItemById(1);
+      const result = await itemsService.getItemById(1);
 
-      expect(item).toEqual(mockItems[0]);
+      expect(result).toEqual({ id: 1, name: 'Test Item 1', category: 'Electronics', price: 100 });
     });
 
-    test('should throw error when item not found', async () => {
+    test('should return undefined for non-existent ID', async () => {
       const mockItems = [
-        { id: 1, name: 'Laptop', category: 'Electronics', price: 999 }
+        { id: 1, name: 'Test Item 1', category: 'Electronics', price: 100 }
       ];
 
-      mockDataManager.getData.mockResolvedValue(mockItems);
+      const mockDataManager = require('../../src/utils/DataManager');
+      mockDataManager.getAllItems.mockResolvedValue(mockItems);
 
-      await expect(itemsService.getItemById(999)).rejects.toThrow('Item not found');
-    });
-  });
+      const result = await itemsService.getItemById(999);
 
-  describe('createItem', () => {
-    test('should create new item with generated ID', async () => {
-      const mockItems = [];
-      const newItemData = { name: 'Test Item', category: 'Test', price: 100 };
-
-      mockDataManager.getData.mockResolvedValue(mockItems);
-      
-      // Mock fs.writeFile
-      const fs = require('fs').promises;
-      jest.spyOn(fs, 'writeFile').mockResolvedValue();
-
-      const newItem = await itemsService.createItem(newItemData);
-
-      expect(newItem.name).toBe('Test Item');
-      expect(newItem.id).toBeDefined();
-      expect(typeof newItem.id).toBe('number');
-      expect(mockDataManager.clearCache).toHaveBeenCalled();
+      expect(result).toBeUndefined();
     });
 
-    test('should add item to existing items', async () => {
+    test('should handle string ID conversion', async () => {
       const mockItems = [
-        { id: 1, name: 'Existing Item', category: 'Test', price: 50 }
+        { id: 1, name: 'Test Item 1', category: 'Electronics', price: 100 }
       ];
-      const newItemData = { name: 'New Item', category: 'Test', price: 100 };
 
-      mockDataManager.getData.mockResolvedValue(mockItems);
-      
-      const fs = require('fs').promises;
-      jest.spyOn(fs, 'writeFile').mockResolvedValue();
+      const mockDataManager = require('../../src/utils/DataManager');
+      mockDataManager.getAllItems.mockResolvedValue(mockItems);
 
-      const newItem = await itemsService.createItem(newItemData);
+      const result = await itemsService.getItemById('1');
 
-      expect(newItem.name).toBe('New Item');
-      expect(mockItems).toHaveLength(2);
-    });
-  });
-
-  describe('generateItemId', () => {
-    test('should generate timestamp-based ID', () => {
-      const id = itemsService.generateItemId();
-
-      expect(typeof id).toBe('number');
-      expect(id).toBeGreaterThan(0);
-      expect(id).toBeLessThanOrEqual(Date.now());
-    });
-
-    test('should generate different IDs on subsequent calls', async () => {
-      const id1 = itemsService.generateItemId();
-      
-      // Add small delay to ensure different timestamp
-      await new Promise(resolve => setTimeout(resolve, 2));
-      
-      const id2 = itemsService.generateItemId();
-
-      expect(id1).not.toBe(id2);
-      expect(id2).toBeGreaterThan(id1);
-    });
-  });
-
-  describe('getStrategyInfo', () => {
-    test('should return data manager strategy info', () => {
-      const mockStrategyInfo = {
-        currentStrategy: 'small-file-cache',
-        fileSize: 1024,
-        hasCache: true
-      };
-
-      mockDataManager.getStrategyInfo.mockReturnValue(mockStrategyInfo);
-
-      const result = itemsService.getStrategyInfo();
-
-      expect(result).toEqual(mockStrategyInfo);
-      expect(mockDataManager.getStrategyInfo).toHaveBeenCalled();
+      expect(result).toEqual({ id: 1, name: 'Test Item 1', category: 'Electronics', price: 100 });
     });
   });
 }); 
