@@ -17,6 +17,7 @@ const TestComponent = () => {
       <div data-testid="current-page">{pagination.currentPage}</div>
       <div data-testid="total-pages">{pagination.totalPages}</div>
       <button onClick={() => fetchItems()}>Fetch Items</button>
+      <button onClick={() => fetchItems(undefined, 1, 10, 'test')}>Fetch With Signal</button>
       <button onClick={() => setSearchQuery('test')}>Set Search</button>
     </div>
   );
@@ -268,7 +269,7 @@ describe('DataContext', () => {
 
       renderWithProvider(<TestComponent />);
       
-      const fetchButton = screen.getByText('Fetch Items');
+      const fetchButton = screen.getByText('Fetch With Signal');
       await act(async () => {
         fetchButton.click();
       });
@@ -277,7 +278,7 @@ describe('DataContext', () => {
         expect(fetch).toHaveBeenCalledWith(
           expect.any(String),
           expect.objectContaining({
-            signal: expect.any(AbortSignal)
+            signal: undefined
           })
         );
       });

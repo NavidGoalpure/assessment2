@@ -89,7 +89,13 @@ describe('Items Integration Tests', () => {
           json: async () => searchResponse
         })
         .mockResolvedValueOnce({
+          json: async () => initialResponse
+        })
+        .mockResolvedValueOnce({
           json: async () => page2Response
+        })
+        .mockResolvedValueOnce({
+          json: async () => initialResponse
         });
 
       renderWithProviders(<Items />);
@@ -279,6 +285,11 @@ describe('Items Integration Tests', () => {
         expect(fetch).toHaveBeenCalledTimes(1);
       });
 
+      // Wait for component to finish loading (even after error)
+      await waitFor(() => {
+        expect(screen.getByPlaceholderText('Search items by name or category...')).toBeInTheDocument();
+      });
+
       // Component should still be interactive after error
       const searchInput = screen.getByPlaceholderText('Search items by name or category...');
       const searchButton = screen.getByText('Search');
@@ -351,6 +362,11 @@ describe('Items Integration Tests', () => {
       });
 
       renderWithProviders(<Items />);
+
+      // Wait for component to finish loading
+      await waitFor(() => {
+        expect(screen.getByPlaceholderText('Search items by name or category...')).toBeInTheDocument();
+      });
 
       const searchInput = screen.getByPlaceholderText('Search items by name or category...');
       const searchButton = screen.getByText('Search');

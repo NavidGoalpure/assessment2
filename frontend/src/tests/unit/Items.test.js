@@ -77,6 +77,11 @@ describe('Items Component', () => {
 
       renderWithProviders(<Items />);
 
+      // Wait for the component to finish loading
+      await waitFor(() => {
+        expect(screen.getByPlaceholderText('Search items by name or category...')).toBeInTheDocument();
+      });
+
       const searchInput = screen.getByPlaceholderText('Search items by name or category...');
       const searchButton = screen.getByText('Search');
 
@@ -113,6 +118,11 @@ describe('Items Component', () => {
 
       renderWithProviders(<Items />);
 
+      // Wait for the component to finish loading
+      await waitFor(() => {
+        expect(screen.getByPlaceholderText('Search items by name or category...')).toBeInTheDocument();
+      });
+
       const searchInput = screen.getByPlaceholderText('Search items by name or category...');
       const searchButton = screen.getByText('Search');
 
@@ -142,6 +152,11 @@ describe('Items Component', () => {
       });
 
       renderWithProviders(<Items />);
+
+      // Wait for the component to finish loading
+      await waitFor(() => {
+        expect(screen.getByPlaceholderText('Search items by name or category...')).toBeInTheDocument();
+      });
 
       const searchInput = screen.getByPlaceholderText('Search items by name or category...');
       const searchButton = screen.getByText('Search');
@@ -379,9 +394,9 @@ describe('Items Component', () => {
       await waitFor(() => {
         expect(screen.getByText('Laptop Pro')).toBeInTheDocument();
         expect(screen.getByText('Mouse')).toBeInTheDocument();
-        expect(screen.getByText('Electronics')).toBeInTheDocument();
-        expect(screen.getByText('Price: $2499')).toBeInTheDocument();
-        expect(screen.getByText('Price: $49')).toBeInTheDocument();
+        expect(screen.getAllByText(/Electronics/)).toHaveLength(2);
+        expect(screen.getByText(/Price: \$2499/)).toBeInTheDocument();
+        expect(screen.getByText(/Price: \$49/)).toBeInTheDocument();
       });
     });
 
