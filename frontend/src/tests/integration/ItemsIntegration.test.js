@@ -108,36 +108,33 @@ describe('Items Integration Tests', () => {
       // Step 1: Wait for initial load
       await waitFor(() => {
         // With virtualization, we check the footer instead of individual items
-        expect(screen.getByText('Showing 10 of 15 items')).toBeInTheDocument();
+        expect(screen.getByText(/Showing 10 of 15 items/)).toBeInTheDocument();
         expect(screen.getByText('Page 1 of 2')).toBeInTheDocument();
       });
 
-      // Step 2: Perform search
-      const searchInput = screen.getByPlaceholderText('Search items by name or category...');
-      const searchButton = screen.getByText('Search');
+      // Step 2: Perform auto-search
+      const searchInput = screen.getByPlaceholderText(/Search items by name or category.*min 3 characters for auto-search/);
 
       fireEvent.change(searchInput, { target: { value: 'laptop' } });
-      fireEvent.click(searchButton);
 
       await waitFor(() => {
-        expect(screen.getByText('Showing 2 of 2 items')).toBeInTheDocument();
-        expect(screen.getByText('Search results for "laptop": 2 items found')).toBeInTheDocument();
-      });
+        expect(screen.getByText(/Showing 2 of 2 items/)).toBeInTheDocument();
+        expect(screen.getByText(/Search results for "laptop": 2 items found/)).toBeInTheDocument();
+      }, { timeout: 2000 });
 
-      // Step 3: Clear search (by searching with empty string)
+      // Step 3: Clear search (by typing empty string)
       fireEvent.change(searchInput, { target: { value: '' } });
-      fireEvent.click(searchButton);
 
       await waitFor(() => {
-        expect(screen.getByText('Showing 10 of 15 items')).toBeInTheDocument();
-      });
+        expect(screen.getByText(/Showing 10 of 15 items/)).toBeInTheDocument();
+      }, { timeout: 2000 });
 
       // Step 4: Navigate to next page
       const nextButton = screen.getByText('Next');
       fireEvent.click(nextButton);
 
       await waitFor(() => {
-        expect(screen.getByText('Showing 5 of 15 items')).toBeInTheDocument();
+        expect(screen.getByText(/Showing 5 of 15 items/)).toBeInTheDocument();
         expect(screen.getByText('Page 2 of 2')).toBeInTheDocument();
       });
 
@@ -146,7 +143,7 @@ describe('Items Integration Tests', () => {
       fireEvent.click(prevButton);
 
       await waitFor(() => {
-        expect(screen.getByText('Showing 10 of 15 items')).toBeInTheDocument();
+        expect(screen.getByText(/Showing 10 of 15 items/)).toBeInTheDocument();
         expect(screen.getByText('Page 1 of 2')).toBeInTheDocument();
       });
     });
@@ -198,28 +195,25 @@ describe('Items Integration Tests', () => {
       // Wait for initial load
       await waitFor(() => {
         // With virtualization, we check the footer instead of individual items
-        expect(screen.getByText('Showing 2 of 2 items')).toBeInTheDocument();
+        expect(screen.getByText(/Showing 2 of 2 items/)).toBeInTheDocument();
       });
 
       // Perform search with no results
-      const searchInput = screen.getByPlaceholderText('Search items by name or category...');
-      const searchButton = screen.getByText('Search');
+      const searchInput = screen.getByPlaceholderText(/Search items by name or category.*min 3 characters for auto-search/);
 
       fireEvent.change(searchInput, { target: { value: 'nonexistent' } });
-      fireEvent.click(searchButton);
 
       await waitFor(() => {
         expect(screen.getByText('No items found.')).toBeInTheDocument();
-        expect(screen.getByText('Search results for "nonexistent": 0 items found')).toBeInTheDocument();
-      });
+        expect(screen.getByText(/Search results for "nonexistent": 0 items found/)).toBeInTheDocument();
+      }, { timeout: 2000 });
 
       // Clear search
       fireEvent.change(searchInput, { target: { value: '' } });
-      fireEvent.click(searchButton);
 
       await waitFor(() => {
-        expect(screen.getByText('Showing 2 of 2 items')).toBeInTheDocument();
-      });
+        expect(screen.getByText(/Showing 2 of 2 items/)).toBeInTheDocument();
+      }, { timeout: 2000 });
     });
   });
 
@@ -295,19 +289,17 @@ describe('Items Integration Tests', () => {
 
       // Wait for component to finish loading (even after error)
       await waitFor(() => {
-        expect(screen.getByPlaceholderText('Search items by name or category...')).toBeInTheDocument();
+        expect(screen.getByPlaceholderText(/Search items by name or category.*min 3 characters for auto-search/)).toBeInTheDocument();
       });
 
       // Component should still be interactive after error
-      const searchInput = screen.getByPlaceholderText('Search items by name or category...');
-      const searchButton = screen.getByText('Search');
+      const searchInput = screen.getByPlaceholderText(/Search items by name or category.*min 3 characters for auto-search/);
 
       fireEvent.change(searchInput, { target: { value: 'test' } });
-      fireEvent.click(searchButton);
 
       await waitFor(() => {
         expect(fetch).toHaveBeenCalledTimes(2);
-      });
+      }, { timeout: 2000 });
     });
   });
 
@@ -373,26 +365,21 @@ describe('Items Integration Tests', () => {
       renderWithProviders(<ItemsPage />);
 
       await waitFor(() => {
-        expect(screen.getByPlaceholderText('Search items by name or category...')).toBeInTheDocument();
+        expect(screen.getByPlaceholderText(/Search items by name or category.*min 3 characters for auto-search/)).toBeInTheDocument();
       });
 
-      const searchInput = screen.getByPlaceholderText('Search items by name or category...');
-      const searchButton = screen.getByText('Search');
+      const searchInput = screen.getByPlaceholderText(/Search items by name or category.*min 3 characters for auto-search/);
 
-      // Perform rapid searches
+      // Perform rapid searches - only the last one should trigger due to debouncing
       fireEvent.change(searchInput, { target: { value: 'test1' } });
-      fireEvent.click(searchButton);
-
       fireEvent.change(searchInput, { target: { value: 'test2' } });
-      fireEvent.click(searchButton);
-
       fireEvent.change(searchInput, { target: { value: 'test3' } });
-      fireEvent.click(searchButton);
 
       // Should handle multiple requests without crashing
       await waitFor(() => {
-        expect(fetch).toHaveBeenCalledTimes(4); // Initial + 3 searches
-      });
+        // Initial load + 1 debounced search (the last one)
+        expect(fetch).toHaveBeenCalledTimes(2);
+      }, { timeout: 3000 });
     });
   });
 }); 

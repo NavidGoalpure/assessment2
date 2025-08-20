@@ -50,14 +50,13 @@ describe('ItemsPage Component', () => {
       renderWithProviders(<ItemsPage />);
       
       await waitFor(() => {
-        expect(screen.getByPlaceholderText('Search items by name or category...')).toBeInTheDocument();
-        expect(screen.getByText('Search')).toBeInTheDocument();
+        expect(screen.getByPlaceholderText(/Search items by name or category.*min 3 characters for auto-search/)).toBeInTheDocument();
       });
     });
   });
 
   describe('Search Functionality', () => {
-    test('should handle search form submission', async () => {
+    test('should handle auto-search when typing 3+ characters', async () => {
       const mockResponse = {
         items: [
           { id: 1, name: 'Laptop Pro', category: 'Electronics', price: 2499 }
@@ -81,21 +80,21 @@ describe('ItemsPage Component', () => {
 
       // Wait for the component to finish loading
       await waitFor(() => {
-        expect(screen.getByPlaceholderText('Search items by name or category...')).toBeInTheDocument();
+        expect(screen.getByPlaceholderText(/Search items by name or category.*min 3 characters for auto-search/)).toBeInTheDocument();
       });
 
-      const searchInput = screen.getByPlaceholderText('Search items by name or category...');
-      const searchButton = screen.getByText('Search');
+      const searchInput = screen.getByPlaceholderText(/Search items by name or category.*min 3 characters for auto-search/);
 
-      fireEvent.change(searchInput, { target: { value: 'laptop' } });
-      fireEvent.click(searchButton);
+      // Type 3 characters to trigger auto-search
+      fireEvent.change(searchInput, { target: { value: 'lap' } });
 
+      // Wait for debounced search to trigger
       await waitFor(() => {
         expect(fetch).toHaveBeenCalledWith(
-          expect.stringContaining('searchQuery=laptop'),
+          expect.stringContaining('searchQuery=lap'),
           expect.any(Object)
         );
-      });
+      }, { timeout: 1000 });
     });
 
     test('should show search results info', async () => {
@@ -122,18 +121,18 @@ describe('ItemsPage Component', () => {
       renderWithProviders(<ItemsPage />);
 
       await waitFor(() => {
-        expect(screen.getByPlaceholderText('Search items by name or category...')).toBeInTheDocument();
+        expect(screen.getByPlaceholderText(/Search items by name or category.*min 3 characters for auto-search/)).toBeInTheDocument();
       });
 
-      const searchInput = screen.getByPlaceholderText('Search items by name or category...');
-      const searchButton = screen.getByText('Search');
+      const searchInput = screen.getByPlaceholderText(/Search items by name or category.*min 3 characters for auto-search/);
 
+      // Type search query
       fireEvent.change(searchInput, { target: { value: 'electronics' } });
-      fireEvent.click(searchButton);
 
+      // Wait for auto-search to complete
       await waitFor(() => {
         expect(screen.getByText(/Search results for "electronics": 2 items found/)).toBeInTheDocument();
-      });
+      }, { timeout: 1000 });
     });
 
     test('should reset to page 1 when searching', async () => {
@@ -159,21 +158,21 @@ describe('ItemsPage Component', () => {
       renderWithProviders(<ItemsPage />);
 
       await waitFor(() => {
-        expect(screen.getByPlaceholderText('Search items by name or category...')).toBeInTheDocument();
+        expect(screen.getByPlaceholderText(/Search items by name or category.*min 3 characters for auto-search/)).toBeInTheDocument();
       });
 
-      const searchInput = screen.getByPlaceholderText('Search items by name or category...');
-      const searchButton = screen.getByText('Search');
+      const searchInput = screen.getByPlaceholderText(/Search items by name or category.*min 3 characters for auto-search/);
 
+      // Type search query
       fireEvent.change(searchInput, { target: { value: 'test' } });
-      fireEvent.click(searchButton);
 
+      // Wait for auto-search to trigger
       await waitFor(() => {
         expect(fetch).toHaveBeenCalledWith(
           expect.stringContaining('pageNumber=1'),
           expect.any(Object)
         );
-      });
+      }, { timeout: 1000 });
     });
   });
 

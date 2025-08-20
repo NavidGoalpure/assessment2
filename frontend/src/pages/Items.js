@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useData } from '../state/DataContext';
 import LoadingSpinner from '../components/LoadingSpinner';
-import SearchForm from '../components/SearchForm';
+import AutoSearchForm from '../components/AutoSearchForm';
 import VirtualizedItemsList from '../components/VirtualizedItemsList';
 import PaginationControls from '../components/PaginationControls';
 
@@ -10,6 +10,31 @@ const ItemsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchInput, setSearchInput] = useState('');
   const [pageSize, setPageSize] = useState(10);
+  const [isAutoSearching, setIsAutoSearching] = useState(false);
+
+  // Handle auto-search with proper memory management
+  const handleAutoSearch = useCallback(async (query, signal) => {
+    if (query.length >= 3) {
+      setIsAutoSearching(true);
+      setSearchQuery(query);
+      setCurrentPage(1); // Reset to first page when searching
+      
+      try {
+        await fetchItems(signal, 1, pageSize, query);
+      } catch (error) {
+        if (error.name !== 'AbortError') {
+          console.error('Auto-search error:', error);
+        }
+      } finally {
+        setIsAutoSearching(false);
+      }
+    } else if (query.length === 0) {
+      // Clear search
+      setSearchQuery('');
+      setCurrentPage(1);
+      setIsAutoSearching(false);
+    }
+  }, [fetchItems, pageSize, setSearchQuery]);
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -26,12 +51,6 @@ const ItemsPage = () => {
     };
   }, [fetchItems, currentPage, pageSize, searchQuery]);
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    setSearchQuery(searchInput);
-    setCurrentPage(1); // Reset to first page when searching
-  };
-
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
@@ -47,12 +66,13 @@ const ItemsPage = () => {
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
-      <SearchForm
+      <AutoSearchForm
         searchInput={searchInput}
         onSearchInputChange={(e) => setSearchInput(e.target.value)}
-        onSearchSubmit={handleSearch}
+        onAutoSearch={handleAutoSearch}
         pageSize={pageSize}
         onPageSizeChange={handlePageSizeChange}
+        isSearching={isAutoSearching || loading}
       />
 
       {/* Search Results Info */}
