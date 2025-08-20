@@ -4,6 +4,7 @@ import LoadingSpinner from '../../components/LoadingSpinner';
 import AutoSearchForm from '../../components/AutoSearchForm';
 import VirtualizedItemsList from '../../components/VirtualizedItemsList';
 import PaginationControls from '../../components/PaginationControls';
+import Hero from '../../components/Hero';
 
 const ItemsPage = () => {
   const { items, pagination, loading, searchQuery, fetchItems, setSearchQuery } = useData();
@@ -65,45 +66,51 @@ const ItemsPage = () => {
   }
 
   return (
-    <div className="p-6 max-w-6xl mx-auto">
-      <AutoSearchForm
-        searchInput={searchInput}
-        onSearchInputChange={(e) => setSearchInput(e.target.value)}
-        onAutoSearch={handleAutoSearch}
-        pageSize={pageSize}
-        onPageSizeChange={handlePageSizeChange}
-        isSearching={isAutoSearching || loading}
-      />
+    <div>
+      {/* Hero Section */}
+      <Hero />
+      
+      {/* Main Content */}
+      <div className="p-6 max-w-6xl mx-auto">
+        <AutoSearchForm
+          searchInput={searchInput}
+          onSearchInputChange={(e) => setSearchInput(e.target.value)}
+          onAutoSearch={handleAutoSearch}
+          pageSize={pageSize}
+          onPageSizeChange={handlePageSizeChange}
+          isSearching={isAutoSearching || loading}
+        />
 
-      {/* Search Results Info */}
-      {searchQuery && (
-        <p className="mb-6 text-gray-600">
-          Search results for "{searchQuery}": {pagination.totalItems} items found
-        </p>
-      )}
+        {/* Search Results Info */}
+        {searchQuery && (
+          <p className="mb-6 text-gray-600">
+            Search results for "{searchQuery}": {pagination.totalItems} items found
+          </p>
+        )}
 
-      <VirtualizedItemsList
-        items={items}
-        totalItems={pagination.totalItems}
-        currentPage={pagination.currentPage}
-        totalPages={pagination.totalPages}
-        pageSize={pageSize}
-      />
+        <VirtualizedItemsList
+          items={items}
+          totalItems={pagination.totalItems}
+          currentPage={pagination.currentPage}
+          totalPages={pagination.totalPages}
+          pageSize={pageSize}
+        />
 
-      <PaginationControls
-        currentPage={pagination.currentPage}
-        totalPages={pagination.totalPages}
-        hasPrevPage={pagination.hasPrevPage}
-        hasNextPage={pagination.hasNextPage}
-        onPageChange={handlePageChange}
-      />
+        <PaginationControls
+          currentPage={pagination.currentPage}
+          totalPages={pagination.totalPages}
+          hasPrevPage={pagination.hasPrevPage}
+          hasNextPage={pagination.hasNextPage}
+          onPageChange={handlePageChange}
+        />
 
-      {/* Loading indicator for pagination */}
-      {loading && items.length > 0 && (
-        <div className="text-center mt-6">
-          <p className="text-gray-600">Loading...</p>
-        </div>
-      )}
+        {/* Loading indicator for pagination */}
+        {loading && items.length > 0 && (
+          <div className="text-center mt-6">
+            <p className="text-gray-600">Loading...</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
