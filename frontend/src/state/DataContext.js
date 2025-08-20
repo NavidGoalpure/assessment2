@@ -1,4 +1,5 @@
 import React, { createContext, useCallback, useContext, useState } from 'react';
+import apiService from '../services/apiService';
 
 const DataContext = createContext();
 
@@ -18,20 +19,7 @@ export function DataProvider({ children }) {
   const fetchItems = useCallback(async (signal, page = 1, limit = 10, query = '') => {
     setLoading(true);
     try {
-      const params = new URLSearchParams({
-        page: page.toString(),
-        limit: limit.toString()
-      });
-      
-      if (query) {
-        params.append('q', query);
-      }
-
-      const res = await fetch(`http://localhost:4001/api/items?${params}`, { 
-        signal: signal || undefined 
-      });
-      
-      const data = await res.json();
+      const data = await apiService.fetchItems(signal, page, limit, query);
       setItems(data.items);
       setPagination(data.pagination);
       setSearchQuery(query);
