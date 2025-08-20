@@ -11,7 +11,11 @@
   "scripts": {
     "start": "cross-env PORT=3000 react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test"
+    "test": "react-scripts test",
+    "test:watch": "react-scripts test --watch",
+    "test:coverage": "react-scripts test --coverage --watchAll=false",
+    "test:unit": "react-scripts test --testPathPattern=tests/unit",
+    "test:integration": "react-scripts test --testPathPattern=tests/integration"
   },
   "browserslist": {
     "production": [
@@ -26,6 +30,9 @@
     ]
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^14.6.1",
     "cross-env": "^7.0.3"
   }
 }

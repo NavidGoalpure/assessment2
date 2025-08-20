@@ -27,6 +27,69 @@ Your task is to refactor, optimize, and fix these problems.
 2. **Performance**  
    - `GET /api/stats` recalculates stats on every request. Cache results, watch file changes, or introduce a smarter strategy.
 
+## 🧪 Testing
+
+This project includes comprehensive test suites for both backend and frontend components.
+
+### Backend Tests
+
+**Test Structure:**
+- **Unit Tests**: Test individual utility functions (pagination, search)
+- **Integration Tests**: Test complete API endpoints and workflows
+
+**Running Tests:**
+```bash
+cd backend
+
+# Run all tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Generate coverage report
+npm run test:coverage
+
+# Run only unit tests
+npm run test:unit
+
+# Run only integration tests
+npm run test:integration
+```
+
+### Frontend Tests
+
+**Test Structure:**
+- **Unit Tests**: Test individual React components and context
+- **Integration Tests**: Test complete user workflows and interactions
+
+**Running Tests:**
+```bash
+cd frontend
+
+# Run all tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Generate coverage report
+npm run test:coverage
+
+# Run only unit tests
+npm run test:unit
+
+# Run only integration tests
+npm run test:integration
+```
+
+**Test Coverage:**
+- ✅ Memory leak prevention with AbortController
+- ✅ Pagination and search functionality
+- ✅ Component rendering and user interactions
+- ✅ Error handling and loading states
+- ✅ API integration and state management
+- ✅ Complete user workflows
 
 ## ⏰ Time Expectation
 
