@@ -50,49 +50,15 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <a href="#" className="text-gray-300 hover:text-white transition-colors duration-200">
-                  🔍 Search Products
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-gray-300 hover:text-white transition-colors duration-200">
+                <Link to="/api" className="text-gray-300 hover:text-white transition-colors duration-200">
                   📊 Statistics
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
 
-          {/* Categories */}
-          <div>
-            <h4 className="text-lg font-semibold mb-4">Categories</h4>
-            <ul className="space-y-2">
-              <li>
-                <a href="#" className="text-gray-300 hover:text-white transition-colors duration-200">
-                  📱 Electronics
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-gray-300 hover:text-white transition-colors duration-200">
-                  👕 Clothing
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-gray-300 hover:text-white transition-colors duration-200">
-                  🏠 Home & Garden
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-gray-300 hover:text-white transition-colors duration-200">
-                  ⚽ Sports
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-gray-300 hover:text-white transition-colors duration-200">
-                  📚 Books
-                </a>
-              </li>
-            </ul>
-          </div>
+          {/* Empty column for layout balance */}
+          <div></div>
         </div>
 
         {/* Bottom Section */}

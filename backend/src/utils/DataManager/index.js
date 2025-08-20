@@ -11,11 +11,11 @@ class DataManager {
 
   async getAllItems() {
     const now = Date.now();
-    
+      
     // Return cached data if still valid
     if (this.cache && (now - this.lastLoad) < this.cacheDuration) {
       return this.cache;
-    }
+      }
 
     try {
       const data = await fs.readFile(this.dataPath, 'utf8');

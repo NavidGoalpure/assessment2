@@ -8,10 +8,10 @@ const ApiRouteCard = ({
   copiedEndpoint, 
   testResults, 
   isLoading, 
-  showResults, 
-  onCopyEndpoint, 
-  onTestApi, 
-  onToggleResults 
+  showResults,
+  onCopyEndpoint,
+  onTestApi,
+  onToggleResults
 }) => {
   const routeKey = `${activeSection}-${index}`;
   const result = testResults[routeKey];
@@ -39,13 +39,13 @@ const ApiRouteCard = ({
             {route.endpoint}
           </code>
         </div>
-        <button
+          <button
           onClick={() => onCopyEndpoint(route.endpoint)}
           className="text-gray-500 hover:text-gray-700 transition-colors duration-200"
           title="Copy endpoint"
         >
           📋
-        </button>
+          </button>
       </div>
 
       <p className="text-gray-700 mb-4">{route.description}</p>
@@ -84,14 +84,14 @@ const ApiRouteCard = ({
         </button>
         
         {result && (
-          <button
-            onClick={() => onToggleResults(routeKey)}
+            <button
+              onClick={() => onToggleResults(routeKey)}
             className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors duration-200 font-medium"
-          >
+            >
             {showResult ? 'Hide Results' : 'Show Results'}
-          </button>
+            </button>
         )}
-      </div>
+          </div>
 
       {showResult && result && (
         <div className="mt-4">

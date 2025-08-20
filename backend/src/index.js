@@ -29,7 +29,7 @@ app.get('/health', (req, res) => {
 if (require.main === module) {
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
-  });
+        });
 }
 
 module.exports = app;

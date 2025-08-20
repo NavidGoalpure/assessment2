@@ -63,9 +63,9 @@ export const DataProvider = ({ children }) => {
         payload: response 
       });
     } catch (error) {
-      console.error('Error fetching items:', error);
+        console.error('Error fetching items:', error);
       dispatch({ type: ACTIONS.SET_ERROR });
-    }
+      }
   }, []);
 
   const fetchItem = useCallback(async (id, signal) => {

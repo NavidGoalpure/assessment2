@@ -6,7 +6,7 @@ class ApiService {
       pageNumber: page.toString(),
       itemsPerPage: pageSize.toString()
     });
-
+    
     if (searchQuery) {
       params.append('searchQuery', searchQuery);
     }
@@ -17,11 +17,11 @@ class ApiService {
         'Content-Type': 'application/json'
       }
     });
-
+    
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-
+    
     return await response.json();
   }
 
@@ -32,11 +32,11 @@ class ApiService {
         'Content-Type': 'application/json'
       }
     });
-
+    
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-
+    
     return await response.json();
   }
 }

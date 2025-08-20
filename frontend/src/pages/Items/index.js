@@ -1,10 +1,12 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useData } from '../../state/DataContext';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import AutoSearchForm from '../../components/AutoSearchForm';
 import VirtualizedItemsList from '../../components/VirtualizedItemsList';
 import PaginationControls from '../../components/PaginationControls';
 import Hero from '../../components/Hero';
+import Footer from '../../components/Footer';
 
 const ItemsPage = () => {
   const { items, pagination, loading, searchQuery, fetchItems, setSearchQuery } = useData();
@@ -36,6 +38,12 @@ const ItemsPage = () => {
       setIsAutoSearching(false);
     }
   }, [fetchItems, pageSize, setSearchQuery]);
+
+  // Handle search input changes
+  const handleSearchInputChange = useCallback((e) => {
+    const newValue = e.target.value;
+    setSearchInput(newValue);
+  }, []);
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -74,7 +82,7 @@ const ItemsPage = () => {
       <div className="p-6 max-w-6xl mx-auto">
         <AutoSearchForm
           searchInput={searchInput}
-          onSearchInputChange={(e) => setSearchInput(e.target.value)}
+          onSearchInputChange={handleSearchInputChange}
           onAutoSearch={handleAutoSearch}
           pageSize={pageSize}
           onPageSizeChange={handlePageSizeChange}

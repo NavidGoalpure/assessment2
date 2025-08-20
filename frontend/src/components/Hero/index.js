@@ -31,16 +31,9 @@ const Hero = () => {
         <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 max-w-4xl mx-auto">
           <h2 className="text-2xl font-semibold mb-4">🚀 Ready to Explore?</h2>
           <p className="text-blue-100 mb-4">
-            Start searching below or browse through our categories. 
-            Our intelligent search will help you find products in seconds!
+            Start searching below to find exactly what you need. 
+            Our intelligent search will help you discover products in seconds!
           </p>
-          <div className="flex flex-wrap justify-center gap-4 text-sm">
-            <span className="bg-white/20 px-3 py-1 rounded-full">Electronics</span>
-            <span className="bg-white/20 px-3 py-1 rounded-full">Clothing</span>
-            <span className="bg-white/20 px-3 py-1 rounded-full">Home & Garden</span>
-            <span className="bg-white/20 px-3 py-1 rounded-full">Sports</span>
-            <span className="bg-white/20 px-3 py-1 rounded-full">Books</span>
-          </div>
         </div>
       </div>
     </div>

@@ -8,7 +8,7 @@ function filterItems(items, searchQuery) {
   if (!searchQuery || searchQuery.trim() === '') {
     return items;
   }
-
+  
   const query = searchQuery.toLowerCase().trim();
   
   return items.filter(item => {

@@ -18,7 +18,7 @@ const ItemDetailPage = () => {
 
     const loadItem = async () => {
       try {
-        setLoading(true);
+    setLoading(true);
         setError(null);
         const itemData = await fetchItem(id, abortController.signal);
         setItem(itemData);
@@ -56,7 +56,7 @@ const ItemDetailPage = () => {
   if (!item) {
     return (
       <div className="p-6 max-w-6xl mx-auto">
-        <div className="text-center py-12">
+      <div className="text-center py-12">
           <p className="text-gray-600 text-lg">Item not found</p>
         </div>
       </div>
