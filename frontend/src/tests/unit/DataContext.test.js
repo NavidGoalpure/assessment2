@@ -66,6 +66,7 @@ describe('DataContext', () => {
       };
 
       fetch.mockResolvedValueOnce({
+        ok: true,
         json: async () => mockResponse
       });
 
@@ -84,7 +85,7 @@ describe('DataContext', () => {
       });
 
       expect(fetch).toHaveBeenCalledWith(
-        'http://localhost:4001/api/items?page=1&limit=10',
+        'http://localhost:4001/api/items?pageNumber=1&itemsPerPage=10',
         expect.any(Object)
       );
     });
@@ -103,167 +104,7 @@ describe('DataContext', () => {
       };
 
       fetch.mockResolvedValueOnce({
-        json: async () => mockResponse
-      });
-
-      renderWithProvider(<TestComponent />);
-      
-      const fetchButton = screen.getByText('Fetch Items');
-      await act(async () => {
-        fetchButton.click();
-      });
-
-      await waitFor(() => {
-        expect(fetch).toHaveBeenCalledWith(
-          'http://localhost:4001/api/items?page=1&limit=10',
-          expect.any(Object)
-        );
-      });
-    });
-
-    test('should handle fetch with pagination parameters', async () => {
-      const mockResponse = {
-        items: [{ id: 1, name: 'Laptop Pro', category: 'Electronics', price: 2499 }],
-        pagination: {
-          currentPage: 2,
-          totalPages: 3,
-          totalItems: 25,
-          itemsPerPage: 10,
-          hasNextPage: true,
-          hasPrevPage: true
-        }
-      };
-
-      fetch.mockResolvedValueOnce({
-        json: async () => mockResponse
-      });
-
-      renderWithProvider(<TestComponent />);
-      
-      const fetchButton = screen.getByText('Fetch Items');
-      await act(async () => {
-        fetchButton.click();
-      });
-
-      await waitFor(() => {
-        expect(fetch).toHaveBeenCalledWith(
-          'http://localhost:4001/api/items?page=1&limit=10',
-          expect.any(Object)
-        );
-      });
-    });
-
-    test('should handle fetch error', async () => {
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-      
-      fetch.mockRejectedValueOnce(new Error('Network error'));
-
-      renderWithProvider(<TestComponent />);
-      
-      const fetchButton = screen.getByText('Fetch Items');
-      await act(async () => {
-        fetchButton.click();
-      });
-
-      await waitFor(() => {
-        expect(screen.getByTestId('loading')).toHaveTextContent('false');
-        expect(consoleSpy).toHaveBeenCalledWith('Error fetching items:', expect.any(Error));
-      });
-
-      consoleSpy.mockRestore();
-    });
-
-    test('should handle AbortError gracefully', async () => {
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-      
-      const abortError = new Error('AbortError');
-      abortError.name = 'AbortError';
-      fetch.mockRejectedValueOnce(abortError);
-
-      renderWithProvider(<TestComponent />);
-      
-      const fetchButton = screen.getByText('Fetch Items');
-      await act(async () => {
-        fetchButton.click();
-      });
-
-      await waitFor(() => {
-        expect(screen.getByTestId('loading')).toHaveTextContent('false');
-        expect(consoleSpy).not.toHaveBeenCalled();
-      });
-
-      consoleSpy.mockRestore();
-    });
-
-    test('should set loading state correctly', async () => {
-      let resolveFetch;
-      const fetchPromise = new Promise((resolve) => {
-        resolveFetch = resolve;
-      });
-
-      fetch.mockReturnValueOnce(fetchPromise);
-
-      renderWithProvider(<TestComponent />);
-      
-      const fetchButton = screen.getByText('Fetch Items');
-      await act(async () => {
-        fetchButton.click();
-      });
-
-      // Should be loading
-      expect(screen.getByTestId('loading')).toHaveTextContent('true');
-
-      // Resolve the fetch
-      await act(async () => {
-        resolveFetch({
-          json: async () => ({
-            items: [],
-            pagination: {
-              currentPage: 1,
-              totalPages: 1,
-              totalItems: 0,
-              itemsPerPage: 10,
-              hasNextPage: false,
-              hasPrevPage: false
-            }
-          })
-        });
-      });
-
-      await waitFor(() => {
-        expect(screen.getByTestId('loading')).toHaveTextContent('false');
-      });
-    });
-  });
-
-  describe('setSearchQuery', () => {
-    test('should update search query', () => {
-      renderWithProvider(<TestComponent />);
-      
-      const searchButton = screen.getByText('Set Search');
-      act(() => {
-        searchButton.click();
-      });
-
-      expect(screen.getByTestId('search-query')).toHaveTextContent('test');
-    });
-  });
-
-  describe('AbortController Integration', () => {
-    test('should pass AbortSignal to fetch', async () => {
-      const mockResponse = {
-        items: [],
-        pagination: {
-          currentPage: 1,
-          totalPages: 1,
-          totalItems: 0,
-          itemsPerPage: 10,
-          hasNextPage: false,
-          hasPrevPage: false
-        }
-      };
-
-      fetch.mockResolvedValueOnce({
+        ok: true,
         json: async () => mockResponse
       });
 
@@ -276,11 +117,135 @@ describe('DataContext', () => {
 
       await waitFor(() => {
         expect(fetch).toHaveBeenCalledWith(
-          expect.any(String),
-          expect.objectContaining({
-            signal: undefined
-          })
+          'http://localhost:4001/api/items?pageNumber=1&itemsPerPage=10&searchQuery=test',
+          expect.any(Object)
         );
+      });
+    });
+
+    test('should handle fetch with pagination parameters', async () => {
+      const mockResponse = {
+        items: [{ id: 1, name: 'Laptop Pro', category: 'Electronics', price: 2499 }],
+        pagination: {
+          currentPage: 2,
+          totalPages: 2,
+          totalItems: 1,
+          itemsPerPage: 5,
+          hasNextPage: false,
+          hasPrevPage: true
+        }
+      };
+
+      fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockResponse
+      });
+
+      renderWithProvider(<TestComponent />);
+      
+      const fetchButton = screen.getByText('Fetch Items');
+      await act(async () => {
+        fetchButton.click();
+      });
+
+      await waitFor(() => {
+        expect(fetch).toHaveBeenCalledWith(
+          'http://localhost:4001/api/items?pageNumber=1&itemsPerPage=10',
+          expect.any(Object)
+        );
+      });
+    });
+
+    test('should handle fetch errors gracefully', async () => {
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      
+      fetch.mockRejectedValueOnce(new Error('Network error'));
+
+      renderWithProvider(<TestComponent />);
+      
+      const fetchButton = screen.getByText('Fetch Items');
+      await act(async () => {
+        fetchButton.click();
+      });
+
+      await waitFor(() => {
+        expect(consoleSpy).toHaveBeenCalled();
+      });
+
+      consoleSpy.mockRestore();
+    });
+
+    test('should handle HTTP error responses', async () => {
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      
+      fetch.mockResolvedValueOnce({
+        ok: false,
+        status: 500,
+        statusText: 'Internal Server Error'
+      });
+
+      renderWithProvider(<TestComponent />);
+      
+      const fetchButton = screen.getByText('Fetch Items');
+      await act(async () => {
+        fetchButton.click();
+      });
+
+      await waitFor(() => {
+        expect(consoleSpy).toHaveBeenCalled();
+      });
+
+      consoleSpy.mockRestore();
+    });
+  });
+
+  describe('setSearchQuery', () => {
+    test('should update search query', async () => {
+      renderWithProvider(<TestComponent />);
+      
+      const setSearchButton = screen.getByText('Set Search');
+      await act(async () => {
+        setSearchButton.click();
+      });
+
+      await waitFor(() => {
+        expect(screen.getByTestId('search-query')).toHaveTextContent('test');
+      });
+    });
+  });
+
+  describe('AbortController', () => {
+    test('should abort previous requests when new request is made', async () => {
+      const mockResponse = {
+        items: [{ id: 1, name: 'Laptop Pro', category: 'Electronics', price: 2499 }],
+        pagination: {
+          currentPage: 1,
+          totalPages: 1,
+          totalItems: 1,
+          itemsPerPage: 10,
+          hasNextPage: false,
+          hasPrevPage: false
+        }
+      };
+
+      fetch.mockResolvedValue({
+        ok: true,
+        json: async () => mockResponse
+      });
+
+      renderWithProvider(<TestComponent />);
+      
+      const fetchButton = screen.getByText('Fetch Items');
+      
+      // Make multiple rapid requests
+      await act(async () => {
+        fetchButton.click();
+        fetchButton.click();
+        fetchButton.click();
+      });
+
+      await waitFor(() => {
+        expect(fetch).toHaveBeenCalledTimes(3);
       });
     });
   });

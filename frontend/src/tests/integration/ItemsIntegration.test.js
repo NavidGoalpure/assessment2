@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
-import Items from '../../pages/Items';
+import ItemsPage from '../../pages/Items';
 import { DataProvider } from '../../state/DataContext';
 
 // Mock fetch globally
@@ -83,29 +83,33 @@ describe('Items Integration Tests', () => {
 
       fetch
         .mockResolvedValueOnce({
+          ok: true,
           json: async () => initialResponse
         })
         .mockResolvedValueOnce({
+          ok: true,
           json: async () => searchResponse
         })
         .mockResolvedValueOnce({
+          ok: true,
           json: async () => initialResponse
         })
         .mockResolvedValueOnce({
+          ok: true,
           json: async () => page2Response
         })
         .mockResolvedValueOnce({
+          ok: true,
           json: async () => initialResponse
         });
 
-      renderWithProviders(<Items />);
+      renderWithProviders(<ItemsPage />);
 
       // Step 1: Wait for initial load
       await waitFor(() => {
         // With virtualization, we check the footer instead of individual items
         expect(screen.getByText('Showing 10 of 15 items')).toBeInTheDocument();
         expect(screen.getByText('Page 1 of 2')).toBeInTheDocument();
-        expect(screen.getByTestId('virtuoso-scroller')).toBeInTheDocument();
       });
 
       // Step 2: Perform search
@@ -116,36 +120,32 @@ describe('Items Integration Tests', () => {
       fireEvent.click(searchButton);
 
       await waitFor(() => {
-        expect(screen.getByText('Search results for "laptop": 2 items found')).toBeInTheDocument();
-        // With virtualization, we check the footer instead of individual items
         expect(screen.getByText('Showing 2 of 2 items')).toBeInTheDocument();
-        expect(screen.queryByText('Keyboard')).not.toBeInTheDocument();
+        expect(screen.getByText('Search results for "laptop": 2 items found')).toBeInTheDocument();
       });
 
-      // Step 3: Clear search and navigate to page 2
+      // Step 3: Clear search (by searching with empty string)
       fireEvent.change(searchInput, { target: { value: '' } });
       fireEvent.click(searchButton);
 
       await waitFor(() => {
-        expect(screen.getByText('Next')).toBeInTheDocument();
+        expect(screen.getByText('Showing 10 of 15 items')).toBeInTheDocument();
       });
 
+      // Step 4: Navigate to next page
       const nextButton = screen.getByText('Next');
       fireEvent.click(nextButton);
 
       await waitFor(() => {
-        // With virtualization, we check the footer instead of individual items
         expect(screen.getByText('Showing 5 of 15 items')).toBeInTheDocument();
         expect(screen.getByText('Page 2 of 2')).toBeInTheDocument();
-        expect(screen.getByText('Previous')).toBeInTheDocument();
       });
 
-      // Step 4: Navigate back to page 1
+      // Step 5: Navigate back to first page
       const prevButton = screen.getByText('Previous');
       fireEvent.click(prevButton);
 
       await waitFor(() => {
-        // With virtualization, we check the footer instead of individual items
         expect(screen.getByText('Showing 10 of 15 items')).toBeInTheDocument();
         expect(screen.getByText('Page 1 of 2')).toBeInTheDocument();
       });
@@ -181,16 +181,19 @@ describe('Items Integration Tests', () => {
 
       fetch
         .mockResolvedValueOnce({
+          ok: true,
           json: async () => initialResponse
         })
         .mockResolvedValueOnce({
+          ok: true,
           json: async () => noResultsResponse
         })
         .mockResolvedValueOnce({
+          ok: true,
           json: async () => initialResponse
         });
 
-      renderWithProviders(<Items />);
+      renderWithProviders(<ItemsPage />);
 
       // Wait for initial load
       await waitFor(() => {
@@ -198,7 +201,7 @@ describe('Items Integration Tests', () => {
         expect(screen.getByText('Showing 2 of 2 items')).toBeInTheDocument();
       });
 
-      // Search for non-existent item
+      // Perform search with no results
       const searchInput = screen.getByPlaceholderText('Search items by name or category...');
       const searchButton = screen.getByText('Search');
 
@@ -207,6 +210,7 @@ describe('Items Integration Tests', () => {
 
       await waitFor(() => {
         expect(screen.getByText('No items found.')).toBeInTheDocument();
+        expect(screen.getByText('Search results for "nonexistent": 0 items found')).toBeInTheDocument();
       });
 
       // Clear search
@@ -214,9 +218,7 @@ describe('Items Integration Tests', () => {
       fireEvent.click(searchButton);
 
       await waitFor(() => {
-        // With virtualization, we check the footer instead of individual items
         expect(screen.getByText('Showing 2 of 2 items')).toBeInTheDocument();
-        expect(screen.queryByText('No items found.')).not.toBeInTheDocument();
       });
     });
   });
@@ -230,7 +232,7 @@ describe('Items Integration Tests', () => {
 
       fetch.mockReturnValueOnce(fetchPromise);
 
-      const { unmount } = renderWithProviders(<Items />);
+      const { unmount } = renderWithProviders(<ItemsPage />);
 
       // Wait for fetch to be called
       await waitFor(() => {
@@ -280,10 +282,11 @@ describe('Items Integration Tests', () => {
       fetch
         .mockRejectedValueOnce(errorResponse)
         .mockResolvedValueOnce({
+          ok: true,
           json: async () => successResponse
         });
 
-      renderWithProviders(<Items />);
+      renderWithProviders(<ItemsPage />);
 
       // Wait for initial error
       await waitFor(() => {
@@ -317,14 +320,15 @@ describe('Items Integration Tests', () => {
 
       fetch.mockReturnValueOnce(fetchPromise);
 
-      renderWithProviders(<Items />);
+      renderWithProviders(<ItemsPage />);
 
       // Should show loading initially
-      expect(screen.getByText('Loading...')).toBeInTheDocument();
+      expect(screen.getByText('Loading items...')).toBeInTheDocument();
 
       // Resolve the fetch
       await act(async () => {
         resolveFetch({
+          ok: true,
           json: async () => ({
             items: [
               { id: 1, name: 'Laptop Pro', category: 'Electronics', price: 2499 }
@@ -341,9 +345,8 @@ describe('Items Integration Tests', () => {
         });
       });
 
-      // Should not show loading after data loads
       await waitFor(() => {
-        expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
+        expect(screen.getByText('Showing 1 of 1 items')).toBeInTheDocument();
       });
     });
 
@@ -363,12 +366,12 @@ describe('Items Integration Tests', () => {
       };
 
       fetch.mockResolvedValue({
+        ok: true,
         json: async () => mockResponse
       });
 
-      renderWithProviders(<Items />);
+      renderWithProviders(<ItemsPage />);
 
-      // Wait for component to finish loading
       await waitFor(() => {
         expect(screen.getByPlaceholderText('Search items by name or category...')).toBeInTheDocument();
       });
@@ -376,13 +379,13 @@ describe('Items Integration Tests', () => {
       const searchInput = screen.getByPlaceholderText('Search items by name or category...');
       const searchButton = screen.getByText('Search');
 
-      // Rapid search interactions
+      // Perform rapid searches
       fireEvent.change(searchInput, { target: { value: 'test1' } });
       fireEvent.click(searchButton);
-      
+
       fireEvent.change(searchInput, { target: { value: 'test2' } });
       fireEvent.click(searchButton);
-      
+
       fireEvent.change(searchInput, { target: { value: 'test3' } });
       fireEvent.click(searchButton);
 

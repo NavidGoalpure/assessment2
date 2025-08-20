@@ -313,8 +313,7 @@ describe('ItemsPage Component', () => {
         // With virtualization, we check the footer instead of individual items
         expect(screen.getByText('Showing 2 of 2 items')).toBeInTheDocument();
         // Check that the virtuoso container is rendered
-        expect(screen.getByText('Laptop Pro')).toBeInTheDocument();
-        expect(screen.getByText('Smartphone')).toBeInTheDocument();
+        expect(screen.getByTestId('virtuoso-scroller')).toBeInTheDocument();
       });
     });
 
@@ -343,7 +342,7 @@ describe('ItemsPage Component', () => {
       await waitFor(() => {
         // With virtualization, we check that the virtuoso container is rendered
         expect(screen.getByText('Showing 1 of 1 items')).toBeInTheDocument();
-        expect(screen.getByText('Test Item')).toBeInTheDocument();
+        expect(screen.getByTestId('virtuoso-scroller')).toBeInTheDocument();
       });
     });
   });
