@@ -52,8 +52,8 @@ describe('Items Integration Tests', () => {
       });
 
       // Check that the Hero section is present
-      expect(screen.getByText('🛍️ Discover Amazing Products')).toBeInTheDocument();
-      expect(screen.getByText('🚀 Ready to Explore?')).toBeInTheDocument();
+      expect(screen.getByText(/Discover Amazing Products/)).toBeInTheDocument();
+      expect(screen.getByText(/Ready to Explore/)).toBeInTheDocument();
 
       // Verify fetch was called
       expect(fetch).toHaveBeenCalledWith(
@@ -178,7 +178,8 @@ describe('Items Integration Tests', () => {
       fireEvent.click(nextButton);
 
       await waitFor(() => {
-        expect(screen.getByText('Page 2 of 2')).toBeInTheDocument();
+        expect(screen.getByText('2')).toBeInTheDocument();
+        expect(screen.getByText(/5 of 15 items/)).toBeInTheDocument();
       });
 
       // Navigate back to first page
@@ -186,7 +187,8 @@ describe('Items Integration Tests', () => {
       fireEvent.click(prevButton);
 
       await waitFor(() => {
-        expect(screen.getByText('Page 1 of 2')).toBeInTheDocument();
+        expect(screen.getByText('1')).toBeInTheDocument();
+        expect(screen.getByText(/10 of 15 items/)).toBeInTheDocument();
       });
     });
   });

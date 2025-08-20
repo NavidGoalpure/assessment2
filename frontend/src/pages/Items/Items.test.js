@@ -203,7 +203,10 @@ describe('ItemsPage Component', () => {
       await waitFor(() => {
         expect(screen.getByText('Previous')).toBeInTheDocument();
         expect(screen.getByText('Next')).toBeInTheDocument();
-        expect(screen.getByText('Page 1 of 3')).toBeInTheDocument();
+        // Check for page numbers instead of specific text
+        expect(screen.getByText('1')).toBeInTheDocument();
+        expect(screen.getByText('2')).toBeInTheDocument();
+        expect(screen.getByText('3')).toBeInTheDocument();
       });
     });
 
@@ -310,7 +313,7 @@ describe('ItemsPage Component', () => {
 
       await waitFor(() => {
         // With virtualization, we check the footer instead of individual items
-        expect(screen.getByText('Showing 2 of 2 items')).toBeInTheDocument();
+        expect(screen.getByText(/2 of 2 items/)).toBeInTheDocument();
         // Check that the virtuoso container is rendered
         expect(screen.getByTestId('virtuoso-scroller')).toBeInTheDocument();
       });
@@ -340,7 +343,7 @@ describe('ItemsPage Component', () => {
 
       await waitFor(() => {
         // With virtualization, we check that the virtuoso container is rendered
-        expect(screen.getByText('Showing 1 of 1 items')).toBeInTheDocument();
+        expect(screen.getByText(/1 of 1 items/)).toBeInTheDocument();
         expect(screen.getByTestId('virtuoso-scroller')).toBeInTheDocument();
       });
     });

@@ -5,7 +5,11 @@ import ItemCard from '../ItemCard';
 const VirtualizedItemsList = ({ items, totalItems, currentPage, totalPages, pageSize }) => {
   if (items.length === 0) {
     return (
-      <div className="text-center py-12">
+      <div 
+        className="text-center py-12"
+        role="status"
+        aria-live="polite"
+      >
         <p className="text-gray-600 text-lg">No items found.</p>
       </div>
     );
@@ -30,6 +34,9 @@ const VirtualizedItemsList = ({ items, totalItems, currentPage, totalPages, page
     <div 
       className="pl-4 pt-2 border border-gray-200 rounded-lg bg-gray-50 overflow-hidden"
       style={{ height: `${dynamicHeight}px` }}
+      role="region"
+      aria-label="Product list"
+      aria-live="polite"
     >
       <Virtuoso
         data={items}
@@ -38,21 +45,30 @@ const VirtualizedItemsList = ({ items, totalItems, currentPage, totalPages, page
         overscan={5}
         components={{
           Footer: () => (
-            <div className="p-4 text-center text-gray-600 bg-gray-50">
+            <div 
+              className="p-4 text-center text-gray-600 bg-gray-50"
+              role="status"
+              aria-live="polite"
+            >
               <div>
-                Showing {items.length} of {totalItems} items
+                <span className="sr-only">Showing </span>
+                {items.length} of {totalItems} items
                 {totalPages > 1 && (
                   <span> (Page {currentPage} of {totalPages})</span>
                 )}
               </div>
               {pageSize > 10 && (
-                <div className="text-xs mt-2 text-gray-500">
+                <div 
+                  className="text-xs mt-2 text-gray-500"
+                  aria-label="Performance note"
+                >
                   Using virtualization for smooth performance
                 </div>
               )}
             </div>
           )
         }}
+        aria-label={`Product list with ${items.length} items`}
       />
     </div>
   );
