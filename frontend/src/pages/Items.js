@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { useData } from '../state/DataContext';
 import { Link } from 'react-router-dom';
+import { Virtuoso } from 'react-virtuoso';
 
 function Items() {
   const { items, pagination, loading, searchQuery, fetchItems, setSearchQuery } = useData();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchInput, setSearchInput] = useState('');
+  const [pageSize, setPageSize] = useState(10);
 
   useEffect(() => {
     const abortController = new AbortController();
 
     // Fetch items with current page and search query
-    fetchItems(abortController.signal, currentPage, 10, searchQuery).catch(error => {
+    fetchItems(abortController.signal, currentPage, pageSize, searchQuery).catch(error => {
       if (error.name !== 'AbortError') {
         console.error(error);
       }
@@ -20,7 +22,7 @@ function Items() {
     return () => {
       abortController.abort();
     };
-  }, [fetchItems, currentPage, searchQuery]);
+  }, [fetchItems, currentPage, pageSize, searchQuery]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -31,6 +33,35 @@ function Items() {
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
+
+  const handlePageSizeChange = (newSize) => {
+    setPageSize(newSize);
+    setCurrentPage(1); // Reset to first page when changing page size
+  };
+
+  // Virtualized item component
+  const ItemComponent = ({ item }) => (
+    <div style={{ 
+      padding: '10px', 
+      border: '1px solid #ddd', 
+      marginBottom: '10px',
+      borderRadius: '4px',
+      backgroundColor: 'white'
+    }}>
+      <Link to={'/items/' + item.id} style={{ 
+        textDecoration: 'none', 
+        color: '#007bff',
+        fontSize: '16px',
+        display: 'block',
+        marginBottom: '4px'
+      }}>
+        {item.name}
+      </Link>
+      <div style={{ color: '#666', fontSize: '14px' }}>
+        Category: {item.category} | Price: ${item.price}
+      </div>
+    </div>
+  );
 
   if (loading && !items.length) return <p>Loading...</p>;
 
@@ -59,11 +90,29 @@ function Items() {
             color: 'white',
             border: 'none',
             borderRadius: '4px',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            marginRight: '10px'
           }}
         >
           Search
         </button>
+        
+        {/* Page Size Selector */}
+        <select
+          value={pageSize}
+          onChange={(e) => handlePageSizeChange(parseInt(e.target.value))}
+          style={{
+            padding: '8px 12px',
+            fontSize: '16px',
+            border: '1px solid #ddd',
+            borderRadius: '4px',
+            backgroundColor: 'white'
+          }}
+        >
+          <option value={10}>10 items per page</option>
+          <option value={25}>25 items per page</option>
+          <option value={50}>50 items per page</option>
+        </select>
       </form>
 
       {/* Search Results Info */}
@@ -73,34 +122,41 @@ function Items() {
         </p>
       )}
 
-      {/* Items List */}
+      {/* Virtualized Items List */}
       {items.length > 0 ? (
-        <ul style={{ listStyle: 'none', padding: 0 }}>
-          {items.map(item => (
-            <li key={item.id} style={{ 
-              padding: '10px', 
-              border: '1px solid #ddd', 
-              marginBottom: '10px',
-              borderRadius: '4px'
-            }}>
-              <Link to={'/items/' + item.id} style={{ 
-                textDecoration: 'none', 
-                color: '#007bff',
-                fontSize: '16px'
-              }}>
-                {item.name}
-              </Link>
-              <div style={{ color: '#666', fontSize: '14px' }}>
-                Category: {item.category} | Price: ${item.price}
-              </div>
-            </li>
-          ))}
-        </ul>
+        <div style={{ 
+          height: '600px', 
+          border: '1px solid #eee',
+          borderRadius: '4px',
+          backgroundColor: '#f9f9f9'
+        }}>
+          <Virtuoso
+            data={items}
+            itemContent={(index, item) => <ItemComponent item={item} />}
+            style={{ height: '100%' }}
+            overscan={5}
+            components={{
+              Footer: () => (
+                <div style={{ padding: '10px', textAlign: 'center', color: '#666' }}>
+                  Showing {items.length} of {pagination.totalItems} items
+                  {pagination.totalPages > 1 && (
+                    <span> (Page {pagination.currentPage} of {pagination.totalPages})</span>
+                  )}
+                  {pageSize > 10 && (
+                    <div style={{ fontSize: '12px', marginTop: '5px' }}>
+                      Using virtualization for smooth performance
+                    </div>
+                  )}
+                </div>
+              )
+            }}
+          />
+        </div>
       ) : (
         <p>No items found.</p>
       )}
 
-      {/* Pagination Controls */}
+      {/* Pagination Controls - Show when there are multiple pages */}
       {pagination.totalPages > 1 && (
         <div style={{ 
           marginTop: '20px', 

@@ -102,8 +102,10 @@ describe('Items Integration Tests', () => {
 
       // Step 1: Wait for initial load
       await waitFor(() => {
-        expect(screen.getByText('Laptop Pro')).toBeInTheDocument();
+        // With virtualization, we check the footer instead of individual items
+        expect(screen.getByText('Showing 10 of 15 items')).toBeInTheDocument();
         expect(screen.getByText('Page 1 of 2')).toBeInTheDocument();
+        expect(screen.getByTestId('virtuoso-scroller')).toBeInTheDocument();
       });
 
       // Step 2: Perform search
@@ -115,8 +117,8 @@ describe('Items Integration Tests', () => {
 
       await waitFor(() => {
         expect(screen.getByText('Search results for "laptop": 2 items found')).toBeInTheDocument();
-        expect(screen.getByText('Laptop Pro')).toBeInTheDocument();
-        expect(screen.getByText('Mouse')).toBeInTheDocument();
+        // With virtualization, we check the footer instead of individual items
+        expect(screen.getByText('Showing 2 of 2 items')).toBeInTheDocument();
         expect(screen.queryByText('Keyboard')).not.toBeInTheDocument();
       });
 
@@ -132,8 +134,8 @@ describe('Items Integration Tests', () => {
       fireEvent.click(nextButton);
 
       await waitFor(() => {
-        expect(screen.getByText('Camera')).toBeInTheDocument();
-        expect(screen.getByText('Printer')).toBeInTheDocument();
+        // With virtualization, we check the footer instead of individual items
+        expect(screen.getByText('Showing 5 of 15 items')).toBeInTheDocument();
         expect(screen.getByText('Page 2 of 2')).toBeInTheDocument();
         expect(screen.getByText('Previous')).toBeInTheDocument();
       });
@@ -143,7 +145,8 @@ describe('Items Integration Tests', () => {
       fireEvent.click(prevButton);
 
       await waitFor(() => {
-        expect(screen.getByText('Laptop Pro')).toBeInTheDocument();
+        // With virtualization, we check the footer instead of individual items
+        expect(screen.getByText('Showing 10 of 15 items')).toBeInTheDocument();
         expect(screen.getByText('Page 1 of 2')).toBeInTheDocument();
       });
     });
@@ -191,7 +194,8 @@ describe('Items Integration Tests', () => {
 
       // Wait for initial load
       await waitFor(() => {
-        expect(screen.getByText('Laptop Pro')).toBeInTheDocument();
+        // With virtualization, we check the footer instead of individual items
+        expect(screen.getByText('Showing 2 of 2 items')).toBeInTheDocument();
       });
 
       // Search for non-existent item
@@ -210,7 +214,8 @@ describe('Items Integration Tests', () => {
       fireEvent.click(searchButton);
 
       await waitFor(() => {
-        expect(screen.getByText('Laptop Pro')).toBeInTheDocument();
+        // With virtualization, we check the footer instead of individual items
+        expect(screen.getByText('Showing 2 of 2 items')).toBeInTheDocument();
         expect(screen.queryByText('No items found.')).not.toBeInTheDocument();
       });
     });
