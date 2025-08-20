@@ -6,14 +6,19 @@ function Items() {
   const { items, fetchItems } = useData();
 
   useEffect(() => {
-    let active = true;
+    const abortController = new AbortController();
 
-    // Intentional bug: setState called after component unmount if request is slow
-    fetchItems().catch(console.error);
+    // Fix: Use AbortController to cancel fetch when component unmounts
+    fetchItems(abortController.signal).catch(error => {
+      // Only log error if it's not an abort error
+      if (error.name !== 'AbortError') {
+        console.error(error);
+      }
+    });
 
-    // Clean‑up to avoid memory leak (candidate should implement)
+    // Cleanup to avoid memory leak
     return () => {
-      active = false;
+      abortController.abort();
     };
   }, [fetchItems]);
 
